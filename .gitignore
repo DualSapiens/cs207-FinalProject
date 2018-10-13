@@ -1,3 +1,8 @@
 ## Jupyter Notebook
 .ipynb_checkpoints
 
+## PyCharm
+.idea
+
+# Virtualenv
+venv/
