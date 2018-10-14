@@ -1,11 +1,11 @@
-yml
 language: python
 python:
     - "3.6"
 before_install:
     - pip install pytest pytest-cov
     - pip install coveralls
+    - pip install numpy
 script:
-    - py.test
+    - pytest
 after_success:
     - coveralls
