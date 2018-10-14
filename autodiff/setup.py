@@ -7,7 +7,7 @@ setuptools.setup(
     name="autodiff",
     version="0.0.1",
     author="DualSapiens",
-    author_email="j_li@g.harvard.edu",
+    author_email="",
     description="A package for automatic differentiation",
     long_description=long_description,
     long_description_content_type="text/markdown",
