@@ -1,3 +1,15 @@
+## Python cache
+__pycache__
+*.pyc
+
 ## Jupyter Notebook
 .ipynb_checkpoints
 
+## PyCharm
+.idea
+
+# Virtualenv
+venv/
+
+# Coverage
+.coverage
