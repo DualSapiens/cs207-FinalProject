@@ -1,8 +1,5 @@
-import os, sys
-mod_path = os.path.abspath(os.path.join(__file__,'..','..','..','autodiff','autodiff'))
-sys.path.append(mod_path)
 import numpy as np
-from autodiff import Var, Array
+from ..autodiff import Var, Array
 
 def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
     """ Multidimensional Newton root-finding using automatic differentiation.
