@@ -1,7 +1,7 @@
-import sys 
-sys.path.append('../../autodiff/autodiff')
+import os, sys
+mod_path = os.path.abspath(os.path.join(__file__,'..','..','..','autodiff','autodiff'))
+sys.path.append(mod_path)
 import numpy as np
-import autodiff
 from autodiff import Var, Array
 
 def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
