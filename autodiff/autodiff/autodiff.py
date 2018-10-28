@@ -202,8 +202,9 @@ class Power(Operation):
         derivative = 0
         derivative += self.op_2.value * (self.op_1.value ** (
                 self.op_2.value-1)) * self.op_1.der(op)
-        derivative += (self.op_1.value ** self.op_2.value) * np.log(
-            self.op_1.value) * self.op_2.der(op)
+        if self.op_2.der(op) != 0 and self.value != 0:
+            # self.op_1.value must be > 0 here!
+            derivative +=  self.value * np.log(self.op_1.value) * self.op_2.der(op)
         return derivative
 
     def evaluate(self):
@@ -304,6 +305,11 @@ class Cos(Operation):
 class Array:
     def __init__(self, ops):
         self.ops = ops
+
+    @property
+    def value(self):
+        values = [op.value for op in self.ops]
+        return values
 
     def der(self, var_op):
         derivatives = [op.der(var_op) for op in self.ops]
