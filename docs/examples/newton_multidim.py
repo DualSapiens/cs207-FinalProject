@@ -6,17 +6,19 @@ from autodiff import Var, Array
 def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
     """ Multidimensional Newton root-finding using automatic differentiation.
 
-    ARGUMENTS
-    =========
-    fun : an autodiff Operation object whose roots are to be computed.
-    var : an array of autodiff Var objects that are independent variables of fun.
-    xi : an array of initial guesses for each variable in var.
+    INPUTS
+    =======
+    fun: an autodiff Operation object whose roots are to be computed.
+    var: an array of autodiff Var objects that are independent variables of fun.
+    xi: an array of initial guesses for each variable in var.
+    tol (optional, default 1e-12): the stopping tolerance for the 2-norm of residual.
+    maxiter (optional, default 100000): the maximum number of iterations.
 
     RETURNS
     =======
-    the root to which the method converged.
-    the 2-norm of the residual.
-    the number of iterations performed.
+    root: the root to which the method converged.
+    res: the 2-norm of the residual.
+    Niter: the number of iterations performed.
     """
 
     h = np.ones(len(var)) # initial step size
@@ -24,7 +26,7 @@ def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
         v.set_value(val)
     b = np.array(fun.value)
     Niter = 0
-    while (sum([v**2 for v in fun.value])>tol and Niter<maxiter):
+    while (np.sqrt(sum([v**2 for v in fun.value]))>tol and Niter<maxiter):
         J = np.array([f.der(v) for v in var]).T # update after implementing .grad()
         h = -np.linalg.solve(J,b)
         for v,step in zip(var,h):
@@ -32,7 +34,7 @@ def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
         b = fun.value
         Niter += 1
     root = [v.value for v in var]
-    res = sum([v**2 for v in f.value])
+    res = np.sqrt(sum([v**2 for v in f.value]))
     return root,res,Niter
 
 """ Root-finding example """
