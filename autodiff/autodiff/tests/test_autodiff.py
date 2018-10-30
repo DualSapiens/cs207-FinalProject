@@ -22,6 +22,18 @@ class Test_Module:
         assert f.der(x) == 1
         assert f.der(y) == 1
 
+    def test_subtraction(self):
+        x = Var(value=5)
+        f = 3-x
+        assert f.der(x) == -1
+    
+    def test_multivar_subtraction(self):
+        x = Var(value=5)
+        y = Var(value=3)
+        f = x - y
+        assert f.der(x) == 1
+        assert f.der(y) == -1
+
     def test_mul(self):
         x = Var(value=5)
         f = 3*x
@@ -33,6 +45,18 @@ class Test_Module:
         f = x * y
         assert f.der(x) == 3
         assert f.der(y) == 5
+
+    def test_div(self):
+        x = Var(value=5)
+        f = 3/x
+        assert f.der(x) == -0.12
+
+    def test_multivar_div(self):
+        x = Var(value=5)
+        y = Var(value=3)
+        f = y / x
+        assert f.der(x) == -0.12
+        assert f.der(y) == 0.2
 
     def test_power(self):
         x = Var(value=5)
@@ -50,6 +74,16 @@ class Test_Module:
         f = x ** y
         assert f.der(x) == 75
         assert f.der(y) == 201.17973905426254
+
+    def test_pos(self):
+        x = Var(value=5)
+        f = +x
+        assert f.der(x) == 1
+
+    def test_neg(self):
+        x = Var(value=5)
+        f = -x
+        assert f.der(x) == -1
 
     def test_sin(self):
         x = Var(value=np.pi/2)
@@ -80,6 +114,30 @@ class Test_Module:
         x = Var(value=5)
         f = Exp(x)
         assert f.der(x) == 148.4131591025766
+
+    def test_exp_const(self):
+        x = Var(value=5)
+        f = x * Exp(5)
+        assert f.der(x) == 148.4131591025766
+
+    def test_log(self):
+        x = Var(value=5)
+        f = Log(x)
+        assert f.der(x) == 0.2
+
+    def test_log_base(self):
+        x = Var(value=8)
+        y = Var(value=2)
+        f = Log(x,base=y)
+        assert f.value == 3
+        assert f.der(x) == 0.18033688011112042
+        assert f.der(y) == -2.1640425613334453
+
+    def test_sqrt(self):
+        x = Var(value=4)
+        f = Sqrt(x)
+        assert f.value == 2
+        assert f.der(x) == 0.25
 
     def test_addition_of_sin_and_cos(self):
         x1 = Var(3)
