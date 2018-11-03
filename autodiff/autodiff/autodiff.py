@@ -95,6 +95,9 @@ class Operation:
     def der(self, op):
         raise NotImplementedError
 
+    def grad(self, ops):
+        return [self.der(op) for op in ops]
+
 
 class Var(Operation):
     def __init__(self, value=None, ID=None):
@@ -314,3 +317,7 @@ class Array:
     def der(self, var_op):
         derivatives = [op.der(var_op) for op in self.ops]
         return derivatives
+
+    def grad(self, var_ops):
+        gradients = [op.grad(var_ops) for op in self.ops]
+        return gradients

@@ -159,6 +159,20 @@ class Test_Module:
                              0.7568024953079282,
                              0]
 
+    def test_multivar_grad(self):
+        x = Var(value=5)
+        y = Var(value=3)
+        f = 2*x**3 + 3*y**2
+        assert f.grad([x,y]) == [150, 18]
+
+    def test_array_grad(self):
+        x = Var(value=5)
+        y = Var(value=2)
+        f = Array([2*x**3 + 3*y**2,
+                   5./x - 2./y**2])
+        assert f.grad([x,y]) == [[150, 12],
+                                 [-0.2, 0.5]]
+
     def test_doc(self):
         x = Var()
         y = Var()
