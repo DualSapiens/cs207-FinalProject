@@ -27,7 +27,7 @@ def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
     b = np.array(fun.value)
     Niter = 0
     while (np.sqrt(sum([v**2 for v in fun.value]))>tol and Niter<maxiter):
-        J = np.array([f.der(v) for v in var]).T # update after implementing .grad()
+        J = f.grad(var)
         h = -np.linalg.solve(J,b)
         for v,step in zip(var,h):
             v.set_value(v.value+step)
