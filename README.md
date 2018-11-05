@@ -5,4 +5,6 @@
 
 Group Name: DualSapiens
 
+Group Number: 13
+
 Members: Jovana Andrejevic, Gopal Kotecha, Jay Li, Ziyi Zhou
