@@ -8,3 +8,7 @@ Group Name: DualSapiens
 Group Number: 13
 
 Members: Jovana Andrejevic, Gopal Kotecha, Jay Li, Ziyi Zhou
+
+[Documentation] is hosted on **readthedocs**.
+
+[Documentation]: https://autodiff.readthedocs.io
