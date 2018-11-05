@@ -1,12 +1,12 @@
 
 import numpy as np
 
-def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
-    """ Multidimensional Newton root-finding using automatic differentiation.
+def newton_multivar(fun,var,xi,tol=1.0e-12,maxiter=100000):
+    """ Multivariate Newton root-finding using automatic differentiation.
 
     INPUTS
     =======
-    fun: an autodiff Operation object whose roots are to be computed.
+    fun: an autodiff Operation or Array object whose roots are to be computed.
     var: an array of autodiff Var objects that are independent variables of fun.
     xi: an array of initial guesses for each variable in var.
     tol (optional, default 1e-12): the stopping tolerance for the 2-norm of residual.
