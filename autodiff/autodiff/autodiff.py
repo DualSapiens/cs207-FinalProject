@@ -96,7 +96,7 @@ class Operation:
         raise NotImplementedError
 
     def grad(self, ops):
-        return [self.der(op) for op in ops]
+        return np.array([self.der(op) for op in ops])
 
 
 class Var(Operation):
@@ -311,13 +311,13 @@ class Array:
 
     @property
     def value(self):
-        values = [op.value for op in self.ops]
+        values = np.array([op.value for op in self.ops])
         return values
 
     def der(self, var_op):
-        derivatives = [op.der(var_op) for op in self.ops]
+        derivatives = np.array([op.der(var_op) for op in self.ops])
         return derivatives
 
     def grad(self, var_ops):
-        gradients = [op.grad(var_ops) for op in self.ops]
+        gradients = np.array([op.grad(var_ops) for op in self.ops])
         return gradients

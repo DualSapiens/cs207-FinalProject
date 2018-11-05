@@ -24,8 +24,8 @@ def newton_multidim(fun,var,xi,tol=1.0e-12,maxiter=100000):
     h = np.ones(len(var)) # initial step size
     for v,val in zip(var,xi):
         v.set_value(val)
-    traj = np.array([xi])
-    b = np.array(fun.value)
+    traj = np.array(xi)
+    b = fun.value
     Niter = 0
     while (np.sqrt(sum([v**2 for v in fun.value]))>tol and Niter<maxiter):
         J = fun.grad(var)
