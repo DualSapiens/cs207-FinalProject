@@ -151,27 +151,27 @@ class Test_Module:
         f = Array([3*x1**2 + 2*x2,
                    Sin(x1) + Cos(x2),
                    Exp(x1**3)])
-        assert f.der(x1) == [18,
-                             -0.9899924966004454,
-                             14365302496248.562
-                             ]
-        assert f.der(x2) == [2,
-                             0.7568024953079282,
-                             0]
+        assert np.all(f.der(x1) == [18,
+                                    -0.9899924966004454,
+                                    14365302496248.562
+                                    ])
+        assert np.all(f.der(x2) == [2,
+                                    0.7568024953079282,
+                                    0])
 
     def test_multivar_grad(self):
         x = Var(value=5)
         y = Var(value=3)
         f = 2*x**3 + 3*y**2
-        assert f.grad([x,y]) == [150, 18]
+        assert np.all(f.grad([x,y]) == [150, 18])
 
     def test_array_grad(self):
         x = Var(value=5)
         y = Var(value=2)
         f = Array([2*x**3 + 3*y**2,
                    5./x - 2./y**2])
-        assert f.grad([x,y]) == [[150, 12],
-                                 [-0.2, 0.5]]
+        assert np.all(f.grad([x,y]) == [[150, 12],
+                                 [-0.2, 0.5]])
 
     def test_doc(self):
         x = Var()
