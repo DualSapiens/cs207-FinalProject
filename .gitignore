@@ -10,6 +10,8 @@ __pycache__
 
 # Virtualenv
 venv/
+env/
+len/
 
 # Coverage
 .coverage
