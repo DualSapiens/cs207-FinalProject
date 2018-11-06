@@ -24,18 +24,20 @@ The `Operation` Class forms the core data structure for automatic differentiatio
             __rsub__ (self, other)
             __mul__(self, other)
             __rmul__(self, other)
-            __div__ (self, other)
-            __rdiv__ (self, other)
-            __neg__ (self)
+            __truediv__ (self, other)
+            __rtruediv__ (self, other)
             __pow__(self, power, modulo=None)
             __rpow__(self, other)
+            __pos__(self)
+            __neg__ (self)
             evaluate(self)
             der(self, op)
+            grad(self, ops)
 
 
 The `Var` Subclass
 ^^^^^^^^^^^^^^^^^^^^^^
-Instances of the `Var` subclass represent independent variables. User-defined functions that can be differentiated by our package are expressed in terms of `Var` instances. The `Var` Class inherits from its `Operation` superclass, and defines an additional method:
+Instances of the `Var` subclass represent independent variables. User-defined functions that can be differentiated by our package are expressed in terms of `Var` instances. The `Var` Class inherits from its `Operation` superclass, and defines an additional method `set_value` to support delayed value assignment when a value is not supplied on initialization:
 
 .. code-block:: python
 
@@ -49,21 +51,26 @@ The `Constant` Subclass allows our package to handle constants in a user-defined
 
 Elementary Operations Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Elementary operations include `Addition`, `Multiplication`, `Subtraction`, `Division`, `Negation`, `Power`, and overload the existing operations. They are defined as subclasses of `Operation`. User-defined functions involving these operations will be instances of an operation subclass, corresponding to the operation applied at the last step in the computational graph.
+Elementary operations include `Addition`, `Multiplication`, `Subtraction`, `Division`, `Power`, `Pos`, and `Neg`, and overload the existing operations. They are defined as subclasses of `Operation`. User-defined functions involving these operations will be instances of an operation subclass, corresponding to the operation applied at the last step in the computational graph.
 
 Elementary Functions Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Elementary functions include `sin`, `cos`, `tan`, and their inverses,`exp` and `log`, and `abs`. A user wishing to define a function with these operations must import them from the `autodiff.math` module prior to defining the function. As with elementary operations, user-defined functions using elementary functions will be instances of the elementary function if it is the last step applied in the computational graph. An external dependency of our package is `numpy`, which allows us to carry out the elementary operations within our subclasses.
+Elementary functions include `Sin` and `Cos`, `Exp` and `Log`, and `Sqrt`. A user wishing to define a function with these operations must import them from the `autodiff.math` module prior to defining the function. As with elementary operations, user-defined functions using elementary functions will be instances of the elementary function if it is the last step applied in the computational graph. An external dependency of our package is `numpy`, which allows us to carry out the elementary operations within our subclasses.
 
 The `Array` Class
 ^^^^^^^^^^^^^^^^^^^^
-The `Array` Class is used to define vector-valued functions. A user wishing to define a vector valued function can express their function as an instance of `Array`, which takes as its argument a list of the components of the function. Its methods are the following:
+The `Array` Class is used to define vector-valued functions. A user wishing to define a vector valued function can express their function as an instance of `Array`, which takes as its argument a list of the components of the function. It includes methods to collectively return the values, derivatives, and gradient of its components as follows:
 
 .. code-block:: python
 
     Array:
+        Attributes:
+            value
         Methods:
-            der(self, op)
+            der(self, var_op)
+            grad(self, var_ops)
+
+An initialized instance of the `Array` class supports indexing through `__getitem__` and entry re-assignment through `__setitem__`. Note that instances of the `Array` Class are not themselves `autodiff` objects; rather, the components of an `Array` instance are `autodiff` objects.
 
 The `IDAllocator` Class
 ^^^^^^^^^^^^^^^^^^^^^^^^^

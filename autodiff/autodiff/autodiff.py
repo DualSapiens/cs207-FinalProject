@@ -241,6 +241,22 @@ class Array:
     def __init__(self, ops):
         self.ops = ops
 
+    def __len__(self):
+        return len(self.ops)
+
+    def __getitem__(self, index):
+        return self.ops[index]
+
+    def __setitem__(self, index, op):
+        try:
+            l = len(op)
+            raise Exception("Cannot set Array value with an array or list.")
+        except TypeError:
+            if isinstance(op, Operation):
+                self.ops[index] = op
+            else:
+                self.ops[index] = Constant(op)
+
     @property
     def value(self):
         values = np.array([op.value for op in self.ops])
