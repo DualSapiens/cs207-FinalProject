@@ -4,24 +4,18 @@ from ..autodiff import *
 from ..math import *
 
 
-class Test_Module:
+class Test_Module_Basic:
+
     def test_initialization(self):
         x = Var(value=5)
         y = Var(value=3)
         assert x.value == 5
-        assert y.value == 3
+        assert y.value == 3  
 
     def test_addition(self):
         x = Var(value=5)
         f = 3+x
         assert f.der(x) == 1
-
-    def test_multivar_addition(self):
-        x = Var(value=5)
-        y = Var(value=3)
-        f = x + y
-        assert f.der(x) == 1
-        assert f.der(y) == 1
 
     def test_subtraction(self):
         x = Var(value=5)
@@ -160,6 +154,9 @@ class Test_Module:
                                     0.7568024953079282,
                                     0])
 
+        
+class Test_Module_Multivariate:
+
     def test_multivar_grad(self):
         x = Var(value=5)
         y = Var(value=3)
@@ -174,6 +171,14 @@ class Test_Module:
         assert np.all(f.grad([x,y]) == [[150, 12],
                                  [-0.2, 0.5]])
 
+class Test_Module_Multiple_Operations:
+    def test_multivar_addition(self):
+        x = Var(value=5)
+        y = Var(value=3)
+        f = x + y
+        assert f.der(x) == 1
+        assert f.der(y) == 1
+        
     def test_doc(self):
         x = Var()
         y = Var()
@@ -181,3 +186,33 @@ class Test_Module:
         x.set_value(5)
         y.set_value(3)
         assert f.der(x) == 50
+    
+    #test addition and subtraction:
+    def test_addition_subtraction_combined(self):
+        x = Var(value=5)
+        y = Var(value=3)
+        z= Var(value=4)
+        f = x - y + z
+        assert f.value == 6
+        assert f.der(x) == 1
+        assert f.der(y) == -1
+        assert f.der(z) == 1
+        
+    def test_addition_subtraction_multiplication_combined(self):
+        x = Var(value=5)
+        y = Var(value=3)
+        z= Var(value=4)
+        w = Var(value=2)
+        f = (2*x) - y + z * w
+        assert f.value == 15
+        assert f.der(w) == 4
+        assert f.der(x) == 2
+        assert f.der(y) == -1
+        assert f.der(z) == 2        
+        
+class Test_Module_Other:        
+     def test_string(self):
+        x = Var(value="CAT")
+        y = Var(value=3)
+        assert x.value == "CAT"
+        assert y.value == 3
