@@ -1,6 +1,7 @@
 import pytest
 import numpy as np
 from ..autodiff import *
+from ..math import *
 
 
 class Test_Module:
