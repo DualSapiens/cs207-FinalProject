@@ -2,9 +2,11 @@ README.md
 setup.py
 autodiff/__init__.py
 autodiff/autodiff.py
+autodiff/math.py
 autodiff.egg-info/PKG-INFO
 autodiff.egg-info/SOURCES.txt
 autodiff.egg-info/dependency_links.txt
+autodiff.egg-info/requires.txt
 autodiff.egg-info/top_level.txt
 autodiff/tests/__init__.py
 autodiff/tests/test_autodiff.py
