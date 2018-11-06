@@ -169,7 +169,38 @@ class Test_Module_Multivariate:
         f = Array([2*x**3 + 3*y**2,
                    5./x - 2./y**2])
         assert np.all(f.grad([x,y]) == [[150, 12],
-                                 [-0.2, 0.5]])
+                                        [-0.2, 0.5]])
+
+    def test_array_getitem(self):
+        x = Var(value=5)
+        y = Var(value=2)
+        f = Array([2*x**3 + 3*y**2,
+                   5./x - 2./y**2])
+        assert len(f) == 2
+        assert np.all(f.grad([x,y]) == [[f[0].der(x), f[0].der(y)],
+                                        [f[1].der(x), f[1].der(y)]])
+
+    def test_array_setitem(self):
+        x = Var()
+        y = Var()
+        f = Array([0,0])
+        with pytest.raises(Exception):
+            f[0] = [2*x, 3*y]
+        f[0] = 2*x**3 + 3*y**2
+        f[1] = 5./x - 2./y**2
+        x.set_value(5)
+        y.set_value(2)
+        assert np.all(f.grad([x,y]) == [[150, 12],
+                                        [-0.2, 0.5]])
+
+    def test_array_setitem_const(self):
+        x = Var(value=5)
+        y = Var(value=2)
+        f = Array([0,0])
+        f[0] = 2*x**3 + 3*y**2
+        f[1] = 5
+        assert np.all(f.grad([x,y]) == [[150, 12],
+                                        [0, 0]])
 
 class Test_Module_Multiple_Operations:
     def test_multivar_addition(self):

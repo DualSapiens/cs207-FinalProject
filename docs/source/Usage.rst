@@ -35,7 +35,7 @@ A multivariable function is defined by initializing more than one `Var` object. 
     y.set_value(3)
     print(f.der(x)) # prints the derivative of f with respect to x
     print(f.der(y)) # prints the derivative of f with respect to y
-    assert f.grad([x,y]) == [f.der(x), f.der(y)]
+    assert np.all(f.grad([x,y]) == [f.der(x), f.der(y)])
 
 Multivariate, vector-valued function
 --------------------------------------
@@ -53,8 +53,8 @@ Vector-valued functions can be defined using the `Array` class of `autodiff`. Th
 
     x.set_value(5)
     y.set_value(3)
-    assert f.der(x) == [f[0].der(x),
-                    f[1].der(x)]
+    assert np.all(f.der(x) == [f[0].der(x),
+                    f[1].der(x)])
 
-    assert f.grad([x,y]) == [[f[0].der(x), f[0].der(y)],
-                         [f[1].der(x), f[1].der(y)]]
+    assert np.all(f.grad([x,y]) == [[f[0].der(x), f[0].der(y)],
+                         [f[1].der(x), f[1].der(y)]])
