@@ -11,4 +11,4 @@ Members: Jovana Andrejevic, Gopal Kotecha, Jay Li, Ziyi Zhou
 
 [Documentation] is hosted on **readthedocs**.
 
-[Documentation]: https://autodiff.readthedocs.io
+[Documentation]: https://autodiff.readthedocs.io/en/latest

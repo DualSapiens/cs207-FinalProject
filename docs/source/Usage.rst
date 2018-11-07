@@ -54,7 +54,7 @@ Vector-valued functions can be defined using the `Array` class of `autodiff`. Th
     x.set_value(5)
     y.set_value(3)
     assert np.all(f.der(x) == [f[0].der(x),
-                    f[1].der(x)])
+                               f[1].der(x)])
 
     assert np.all(f.grad([x,y]) == [[f[0].der(x), f[0].der(y)],
-                         [f[1].der(x), f[1].der(y)]])
+                                    [f[1].der(x), f[1].der(y)]])
