@@ -19,7 +19,7 @@ After importing `autodiff`, a `Var` object is created which represents an indepe
 
 Multivariate, scalar-valued function
 --------------------------------------
-A multivariable function is defined by initializing more than one `Var` object. Then, the derivative with respect to each independent variable may be accessed by passing in the appropriate variable in the argument of the `der()` method. The `grad()` method allows several derivatives to be returned at once. Here we also illustrate the use of special functions `sin` and `cos`, imported from the `autodiff` math module.
+A multivariable function is defined by initializing more than one `Var` object. Then, the derivative with respect to each independent variable may be accessed by passing in the appropriate variable in the argument of the `der()` method. The `grad()` method allows several derivatives to be returned at once. Here we also illustrate the use of special functions `Sin` and `Cos`, imported from the `autodiff` math module.
 
 .. code-block:: python
 
@@ -29,7 +29,7 @@ A multivariable function is defined by initializing more than one `Var` object. 
     x = autodiff.Var()
     y = autodiff.Var()
 
-    f = admath.sin(x)**2 + 2*admath.cos(y)
+    f = admath.Sin(x)**2 + 2*admath.Cos(y)
 
     x.set_value(5)
     y.set_value(3)
