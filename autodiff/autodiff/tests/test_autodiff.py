@@ -89,6 +89,26 @@ class Test_Module_Basic:
         x = Var(value=np.pi/2)
         f = Cos(x)
         assert np.isclose(f.der(x), -1)
+        
+    def test_arcsin(self):
+        x = Var(value=1)
+        f = Arcsin(x)
+        assert np.isclose(f.value, np.pi/2)
+
+    def test_arccos(self):
+        x = Var(value=0)
+        f = Arccos(x)
+        assert np.isclose(f.value, np.pi/2)
+
+    def test_arcsin_der(self):
+        x = Var(value=0.8)
+        f = Arcsin(x)
+        assert np.isclose(f.der(x), 5/3)
+
+    def test_arccos_der(self):
+        x = Var(value=0.8)
+        f = Arccos(x)
+        assert np.isclose(f.der(x), -5/3)
 
     def test_delayed_value_assignment(self):
         x = Var()

@@ -54,6 +54,31 @@ class Sin(Operation):
 
     def evaluate(self):
         self._value = np.sin(self.op.value)
+        
+class Arcsin(Operation):
+    def __init__(self, op, ID=None):
+        super().__init__(ID=ID)
+        self.op = op if isinstance(op, Operation) else Constant(op)
+
+    def der(self, op):
+        self.evaluate()
+        return (1/np.sqrt(1-np.square(self.op.value)))*self.op.der(op)
+
+    def evaluate(self):
+        self._value = np.arcsin(self.op.value)
+
+
+class Arccos(Operation):
+    def __init__(self, op, ID=None):
+        super().__init__(ID=ID)
+        self.op = op if isinstance(op, Operation) else Constant(op)
+
+    def der(self, op):
+        self.evaluate()
+        return -(1/np.sqrt(1-np.square(self.op.value)))*self.op.der(op)
+
+    def evaluate(self):
+        self._value = np.arccos(self.op.value)
 
 
 class Cos(Operation):
