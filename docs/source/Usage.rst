@@ -8,9 +8,9 @@ After importing `autodiff`, a `Var` object is created which represents an indepe
 
 .. code-block:: python
 
-    from autodiff import autodiff
+    from autodiff.autodiff import Var
 
-    x = autodiff.Var()
+    x = Var()
 
     f = 5*x**2
 
@@ -23,13 +23,13 @@ A multivariable function is defined by initializing more than one `Var` object. 
 
 .. code-block:: python
 
-    from autodiff import autodiff
-    from autodiff import math as admath
+    from autodiff.autodiff import Var
+    from autodiff.math import Sin, Cos
 
-    x = autodiff.Var()
-    y = autodiff.Var()
+    x = Var()
+    y = Var()
 
-    f = admath.Sin(x)**2 + 2*admath.Cos(y)
+    f = Sin(x)**2 + 2*Cos(y)
 
     x.set_value(5)
     y.set_value(3)
@@ -43,13 +43,13 @@ Vector-valued functions can be defined using the `Array` class of `autodiff`. Th
 
 .. code-block:: python
 
-    from autodiff import autodiff
+    from autodiff.autodiff import Var, Array
 
-    x = autodiff.Var()
-    y = autodiff.Var()
+    x = Var()
+    y = Var()
 
-    f = autodiff.Array([5*x**2+3*y,
-                    3*x+2*y**2])
+    f = Array([5*x**2+3*y,
+               3*x+2*y**2])
 
     x.set_value(5)
     y.set_value(3)

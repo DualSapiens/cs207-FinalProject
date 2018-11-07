@@ -13,30 +13,32 @@ Directory Structure
             autodiff.py
             math.py
         setup.py
+        requirements.txt
         LICENSE
         README.md
     docs\
         milestone1.ipynb
         examples\
-            intro_AD.py
-            multivariate_AD.py
-            vector_valued_AD.py
-            special_functions.py
+            introductory_demo.ipynb
+            special_functions_demo.ipynb
+            newton_multivar_demo.ipynb
+            newton_multivar.py
     README.md
     .travis.yml
     setup.cfg
-    requirements.txt
 
 Modules
 -------------
 1. **autodiff/autodiff.py**: defines the core structure of automatic differentiation, including   attributes for accessing values and gradients, and methods for operator overloading. This is the main module users will import.
-
 2. **autodiff/math.py**: defines elementary functions (sin, exp) to be imported by the user and used when defining a function.
+3. **autodiff/tests/test_autodiff.py**: A module of test functions used in validating our implementation.
 
-4. **docs/examples/intro_AD.py**: An introductory example of using the AutoDiff package, covering univariate, scalar valued functions.
-5. **examples/multivariate_AD.py**: A demonstration of automatic differentiation for multivariate functions, as well as retrieving the attributes of vector-valued functions.
-6. **examples/special_functions.py**: How to import and use functions such as `sin` and `exp` when defining functions.
-7. **autodiff/tests/test_autodiff.py**: A module of test functions that we will use in validating our implementation.
+Examples
+-------------
+1. **docs/examples/introductory_demo.ipynb**: Introductory examples of using the `autodiff` package, covering single-variable, multi-variable, and vector-valued functions.
+2. **docs/examples/special_functions_demo.ipynb**: How to import and use functions such as `sin` and `exp`.
+3. **docs/examples/newton_multivar_demo.ipynb**: An application of `autodiff` in root-finding using Newton's method.
+
 
 Tests
 -------

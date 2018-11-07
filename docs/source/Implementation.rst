@@ -70,7 +70,7 @@ The `Array` Class is used to define vector-valued functions. A user wishing to d
             der(self, var_op)
             grad(self, var_ops)
 
-An initialized instance of the `Array` class supports indexing through `__getitem__` and entry re-assignment through `__setitem__`. Note that instances of the `Array` Class are not themselves `autodiff` objects; rather, the components of an `Array` instance are `autodiff` objects.
+An initialized instance of the `Array` class supports indexing and entry re-assignment (through `__getitem__` and `__setitem__`). Note that instances of the `Array` Class are not themselves `autodiff Operation` objects; rather, the components of an `Array` instance are `autodiff Operation` objects.
 
 The `IDAllocator` Class
 ^^^^^^^^^^^^^^^^^^^^^^^^^
