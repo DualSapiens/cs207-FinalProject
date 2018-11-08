@@ -8,10 +8,10 @@ __pycache__
 ## PyCharm
 .idea
 
-# Virtualenv
+## Virtualenv
 venv/
 env/
 len/
 
-# Coverage
+## Coverage
 .coverage
