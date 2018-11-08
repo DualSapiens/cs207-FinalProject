@@ -25,10 +25,6 @@ class Operation:
 
     @property
     def value(self):
-        return self._value
-
-    @value.getter
-    def value(self):
         self.evaluate()
         return self._value
 
