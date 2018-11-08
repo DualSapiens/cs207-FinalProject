@@ -14,13 +14,13 @@ Install Manually
 ----------------------
 If the users want to install our package manually, here are the few steps we suggest them to do:
 
-1. Download `autodiff-0.0.6.tar.gz`_ and `requirements.txt`_ from our Github repository.
+1. Download `autodiff-0.0.7.tar.gz`_ and `requirements.txt`_ from our Github repository.
 2. Create a project directory and `cd` into that directory.
 3. Ensure that `virtualenv` for `python3` has been installed.
 4. Type `virtualenv env --python=python3` to create a new virtual environment.
 5. Type `source env/bin/activate`. You have now activated a vitrual environment.
 6. Place the downloaded `requirements.txt` file into the project directory and type `pip install -r requirements.txt` to install the necessary dependencies.
-7. Unpack `autodiff-0.0.6.tar.gz` in the project directory (or anywhere really), and `cd` into the unpacked directory.
+7. Unpack `autodiff-0.0.7.tar.gz` in the project directory (or anywhere really), and `cd` into the unpacked directory.
 8. Type `python setup.py install` and the package will be installed.
 9. Users can now try the examples shown in `docs/examples`_ on our GitHub repo to verify and explore the wonderful `autodiff` package!
 
