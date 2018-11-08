@@ -24,7 +24,7 @@ If the users want to install our package manually, here are the few steps we sug
 8. Type `python setup.py install` and the package will be installed.
 9. Users can now try the examples shown in `docs/examples`_ on our GitHub repo to verify and explore the wonderful `autodiff` package!
 
-.. _autodiff-0.0.6.tar.gz: https://github.com/DualSapiens/cs207-FinalProject/blob/master/autodiff/dist/autodiff-0.0.6.tar.gz
+.. _autodiff-0.0.7.tar.gz: https://github.com/DualSapiens/cs207-FinalProject/blob/master/autodiff/dist/autodiff-0.0.7.tar.gz
 
 .. _requirements.txt: https://raw.githubusercontent.com/DualSapiens/cs207-FinalProject/master/autodiff/requirements.txt
 
