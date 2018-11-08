@@ -1,0 +1,3 @@
+## Build and Packaging
+build/
+*.egg-info
