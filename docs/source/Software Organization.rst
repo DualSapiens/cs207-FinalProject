@@ -42,4 +42,4 @@ Examples
 
 Tests
 -------
-The test suite is in the *tests* directory of our package. We maintain our test suite and package on GitHub, with Travis CI and Coveralls for continuous integration. We use PyPI for package distribution.
+The test suite is in the *tests* directory of our package. We maintain our test suite and package on GitHub, with Travis CI and Coveralls for continuous integration.
