@@ -18,7 +18,7 @@ class Exp(Operation):
 
 
 class Log(Operation):
-    """Natural logarithm
+    """Logarithm (default Natural Logarithm)
     """
     def __init__(self, op, base=Constant(np.e), ID=None):
         super().__init__(ID=ID)
