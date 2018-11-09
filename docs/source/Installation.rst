@@ -8,7 +8,7 @@ Because we want the users to be able to use our package right away, we suggest t
 2. Type `virtualenv env --python=python3` to create a new virtual environment.
 3. Type `source env/bin/activate`. You have now activated a virtual environment.
 4. Type `python -m pip install --index-url https://test.pypi.org/simple/ autodiff` to install the `autodiff` package.
-5. Users can now try the examples shown in `docs/examples`_ on our GitHub repo to verify and explore the wonderful `autodiff` package!
+5. Users can now try the examples shown in :doc:`Usage` page or `docs/examples`_ in our GitHub repo to verify and explore the wonderful `autodiff` package!
 
 Install Manually
 ----------------------
@@ -22,7 +22,7 @@ If the users want to install our package manually, here are the few steps we sug
 6. Place the downloaded `requirements.txt` file into the project directory and type `pip install -r requirements.txt` to install the necessary dependencies.
 7. Unpack `autodiff-0.0.7.tar.gz` in the project directory (or anywhere really), and `cd` into the unpacked directory.
 8. Type `python setup.py install` and the package will be installed.
-9. Users can now try the examples shown in `docs/examples`_ on our GitHub repo to verify and explore the wonderful `autodiff` package!
+9. Users can now try the examples shown in :doc:`Usage` page or `docs/examples`_ in our GitHub repo to verify and explore the wonderful `autodiff` package!
 
 .. _autodiff-0.0.7.tar.gz: https://github.com/DualSapiens/cs207-FinalProject/blob/master/autodiff/dist/autodiff-0.0.7.tar.gz
 

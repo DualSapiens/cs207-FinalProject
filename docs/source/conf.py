@@ -103,6 +103,8 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 
+# Do not convert quotes and dashes, especially for double dashes in commands
+smartquotes = False
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
