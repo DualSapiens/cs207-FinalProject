@@ -1,7 +1,10 @@
 import numpy as np
 from .autodiff import Operation, Constant
 
+
 class Exp(Operation):
+    """Natural exponential function
+    """
     def __init__(self, op, ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
@@ -13,7 +16,10 @@ class Exp(Operation):
     def evaluate(self):
         self._value = np.exp(self.op.value)
 
+
 class Log(Operation):
+    """Natural logarithm
+    """
     def __init__(self, op, base=Constant(np.e), ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
@@ -31,7 +37,10 @@ class Log(Operation):
     def evaluate(self):
         self._value = np.log(self.op.value) / np.log(self.base.value)
 
+
 class Sqrt(Operation):
+    """Square root
+    """
     def __init__(self, op, ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
@@ -43,7 +52,10 @@ class Sqrt(Operation):
     def evaluate(self):
         self._value = np.sqrt(self.op.value)
 
+
 class Sin(Operation):
+    """Sine function
+    """
     def __init__(self, op, ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
@@ -54,8 +66,11 @@ class Sin(Operation):
 
     def evaluate(self):
         self._value = np.sin(self.op.value)
-        
+
+
 class Arcsin(Operation):
+    """Inverse sine function
+    """
     def __init__(self, op, ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
@@ -68,20 +83,9 @@ class Arcsin(Operation):
         self._value = np.arcsin(self.op.value)
 
 
-class Arccos(Operation):
-    def __init__(self, op, ID=None):
-        super().__init__(ID=ID)
-        self.op = op if isinstance(op, Operation) else Constant(op)
-
-    def der(self, op):
-        self.evaluate()
-        return -(1/np.sqrt(1-np.square(self.op.value)))*self.op.der(op)
-
-    def evaluate(self):
-        self._value = np.arccos(self.op.value)
-
-
 class Cos(Operation):
+    """Cosine function
+    """
     def __init__(self, op, ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
@@ -92,3 +96,18 @@ class Cos(Operation):
 
     def evaluate(self):
         self._value = np.cos(self.op.value)
+
+
+class Arccos(Operation):
+    """Inverse cosine function
+    """
+    def __init__(self, op, ID=None):
+        super().__init__(ID=ID)
+        self.op = op if isinstance(op, Operation) else Constant(op)
+
+    def der(self, op):
+        self.evaluate()
+        return -(1/np.sqrt(1-np.square(self.op.value)))*self.op.der(op)
+
+    def evaluate(self):
+        self._value = np.arccos(self.op.value)

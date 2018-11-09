@@ -3,6 +3,10 @@ import numpy as np
 
 
 class IDAllocator:
+    """Allocate unique IDs for different operations
+    """
+
+    # list of id for created operations
     ids = []
 
     @classmethod
@@ -17,6 +21,9 @@ class IDAllocator:
 
 
 class Operation:
+    """Super-class of all the elementary operations/functions as well as
+       variables and constants
+    """
     def __init__(self, value=None, ID=None):
         if ID is None:
             ID = IDAllocator.allocate_id()
@@ -80,31 +87,51 @@ class Operation:
             return Power(Constant(other), self)
     
     def __pos__(self):
-        return Pos(self)
+        return self
 
     def __neg__(self):
         return Neg(self)
 
     def evaluate(self):
+        """ Evaluate the value of the entire operation
+
+        stores the value internally
+        """
         raise NotImplementedError
 
     def der(self, op):
+        """Compute the derivative of the operation with respect to a variable
+
+        :param op: the variable to take derivative against
+        :return: the derivative value
+        """
         raise NotImplementedError
 
     def grad(self, ops):
+        """Compute the gradient of the operation with respect to a set of variables
+
+        :param ops: the variables to take gradient against
+        :return: the gradient as a np array
+        """
         return np.array([self.der(op) for op in ops])
 
 
 class Var(Operation):
+    """Represent a scalar variable
+    """
     def __init__(self, value=None, ID=None):
         super().__init__(value, ID)
 
     def set_value(self, value):
+        """Set/change the value of the variable
+
+        :param value: the value to set to
+        """
         self._value = value
 
     def evaluate(self):
         if self._value is None:
-            raise Exception("Evaluate ")
+            raise Exception("Variable value not set yet")
         return self._value
 
     def der(self, op):
@@ -115,18 +142,23 @@ class Var(Operation):
 
 
 class Constant(Operation):
+    """Represent a scalar constant
+    """
     def __init__(self, value=None, ID=None):
         if value is None:
             raise Exception("Cannot have not-valued constant")
         super().__init__(value=value, ID=ID)
 
     def evaluate(self):
-        return self._value
+        pass
 
     def der(self, op):
         return 0
 
+
 class Addition(Operation):
+    """Addition between two ops
+    """
     def __init__(self, op_1, op_2, ID=None):
         super().__init__(ID=ID)
         self.op_1 = op_1
@@ -142,7 +174,10 @@ class Addition(Operation):
     def evaluate(self):
         self._value = self.op_1.value + self.op_2.value
 
+
 class Subtraction(Operation):
+    """First op subtracted by second op
+    """
     def __init__(self, op_1, op_2, ID=None):
         super().__init__(ID=ID)
         self.op_1 = op_1
@@ -158,7 +193,10 @@ class Subtraction(Operation):
     def evaluate(self):
         self._value = self.op_1.value - self.op_2.value
 
+
 class Multiplication(Operation):
+    """Multiply two ops
+    """
     def __init__(self, op_1, op_2, ID=None):
         super().__init__(ID=ID)
         self.op_1 = op_1
@@ -174,7 +212,10 @@ class Multiplication(Operation):
     def evaluate(self):
         self._value = self.op_1.value * self.op_2.value
 
+
 class Division(Operation):
+    """first op divided by second op
+    """
     def __init__(self, op_1, op_2, ID=None):
         super().__init__(ID=ID)
         self.op_1 = op_1
@@ -190,7 +231,10 @@ class Division(Operation):
     def evaluate(self):
         self._value = self.op_1.value / self.op_2.value
 
+
 class Power(Operation):
+    """Raise first op to the power of second op
+    """
     def __init__(self, op_1, op_2, ID=None):
         super().__init__(ID=ID)
         self.op_1 = op_1
@@ -209,19 +253,10 @@ class Power(Operation):
     def evaluate(self):
         self._value = self.op_1.value**self.op_2.value
 
-class Pos(Operation):
-    def __init__(self, op, ID=None):
-        super().__init__(ID=ID)
-        self.op = op
-
-    def der(self, op):
-        self.evaluate()
-        return self.op.der(op)
-
-    def evaluate(self):
-        self._value = self.op.value
 
 class Neg(Operation):
+    """Negation
+    """
     def __init__(self, op, ID=None):
         super().__init__(ID=ID)
         self.op = op
@@ -233,7 +268,10 @@ class Neg(Operation):
     def evaluate(self):
         self._value = -self.op.value
 
+
 class Array:
+    """Represent vector functions
+    """
     def __init__(self, ops):
         self.ops = ops
 
