@@ -15,4 +15,4 @@ len/
 
 ## Coverage
 .coverage
-coverage_html_report
+htmlcov
