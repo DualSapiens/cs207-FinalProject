@@ -36,7 +36,61 @@ class Operation:
         return self._value
 
     def __eq__(self, other):
-        return self.ID == other.ID
+        if isinstance(other, Operation):
+            if other._value is not None:
+                return self._value == other._value
+            else:
+                raise Exception('The operation does not have a value.')
+        else:
+            raise TypeError('Value comparison must be between two Operation objects.')
+
+
+    def __ne__(self, other):
+        if isinstance(other, Operation):
+            if other._value is not None:
+                return self._value != other._value
+            else:
+                raise Exception('The operation does not have a value.')
+        else:
+            raise TypeError('Value comparison must be between two Operation objects.')
+
+    def __lt__(self, other):
+        if isinstance(other, Operation):
+            if other._value is not None:
+                return self._value < other._value
+            else:
+                raise Exception('The operation does not have a value.')
+        else:
+            raise TypeError('Value comparison must be between two Operation objects.')
+
+    def __gt__(self, other):
+        if isinstance(other, Operation):
+            if other._value is not None:
+                return self._value > other._value
+            else:
+                raise Exception('The operation does not have a value.')
+        else:
+            raise TypeError('Value comparison must be between two Operation objects.')
+
+    def __le__(self, other):
+        if isinstance(other, Operation):
+            if other._value is not None:
+                return self._value <= other._value
+            else:
+                raise Exception('The operation does not have a value.')
+        else:
+            raise TypeError('Value comparison must be between two Operation objects.')
+
+
+    def __ge__(self, other):
+        if isinstance(other, Operation):
+            if other._value is not None:
+                return self._value >= other._value
+            else:
+                raise Exception('The operation does not have a value.')
+        else:
+            raise TypeError('Value comparison must be between two Operation objects.')
+
 
     def __add__(self, other):
         if isinstance(other, Operation):
@@ -92,6 +146,7 @@ class Operation:
     def __neg__(self):
         return Neg(self)
 
+
     def evaluate(self):
         """ Evaluate the value of the entire operation
 
@@ -116,6 +171,8 @@ class Operation:
         return np.array([self.der(op) for op in ops])
 
 
+
+
 class Var(Operation):
     """Represent a scalar variable
     """
@@ -135,10 +192,11 @@ class Var(Operation):
         return self._value
 
     def der(self, op):
-        if self == op:
+        if self.ID == op.ID:
             return 1
         else:
             return 0
+
 
 
 class Constant(Operation):

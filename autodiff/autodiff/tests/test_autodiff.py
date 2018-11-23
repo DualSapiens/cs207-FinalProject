@@ -85,10 +85,33 @@ class Test_Module_Basic:
         f = Sin(x)
         assert np.isclose(f.der(x), 0)
 
+    def test_sinh(self):
+        x = Var(value=0)
+        f = Sinh(x)
+        assert np.isclose(f.value, 0)
+        assert np.isclose(f.der(x), 1)
+
+    def test_cosh(self):
+        x = Var(value=0)
+        f = Cosh(x)
+        assert np.isclose(f.value, 1)
+        assert np.isclose(f.der(x), 0)
+
+    def test_tanh(self):
+        x = Var(value=0)
+        f = Tanh(x)
+        assert np.isclose(f.value, 0)
+        assert np.isclose(f.der(x), 1)
+
     def test_cos(self):
         x = Var(value=np.pi/2)
         f = Cos(x)
         assert np.isclose(f.der(x), -1)
+
+    def test_tan(self):
+        x = Var(value=0)
+        f_1 = Tan(x)
+        assert np.isclose(f_1.der(x), 1)
         
     def test_arcsin(self):
         x = Var(value=1)
@@ -100,6 +123,11 @@ class Test_Module_Basic:
         f = Arccos(x)
         assert np.isclose(f.value, np.pi/2)
 
+    def test_arctan(self):
+        x = Var(value=0)
+        f = Arctan(x)
+        assert np.isclose(f.value, 0)
+
     def test_arcsin_der(self):
         x = Var(value=0.8)
         f = Arcsin(x)
@@ -109,6 +137,11 @@ class Test_Module_Basic:
         x = Var(value=0.8)
         f = Arccos(x)
         assert np.isclose(f.der(x), -5/3)
+
+    def test_arctan_der(self):
+        x = Var(value=0.8)
+        f = Arctan(x)
+        assert np.isclose(f.der(x), 25/41)
 
     def test_delayed_value_assignment(self):
         x = Var()
@@ -154,6 +187,12 @@ class Test_Module_Basic:
         assert f.value == 2
         assert f.der(x) == 0.25
 
+    def test_logistic(self):
+        x = Var(8)
+        f = Logistic(x, 2, 3, 0.2)
+        assert f.value == 2.305574350497053
+        assert f.der(x) == 0.10673666438808344
+
     def test_addition_of_sin_and_cos(self):
         x1 = Var(3)
         x2 = Var(4)
@@ -174,7 +213,61 @@ class Test_Module_Basic:
                                     0.7568024953079282,
                                     0])
 
-        
+    def test_eq(self):
+        x1 = Var(3)
+        x2 = Var(3)
+        x3 = Var(4)
+        a = (x1 == x2)
+        b = (x1 == x3)
+        assert a is True
+        assert b is False
+
+    def test_ne(self):
+        x1 = Var(3)
+        x2 = Var(3)
+        x3 = Var(4)
+        a = (x1 != x2)
+        b = (x1 != x3)
+        assert a is False
+        assert b is True
+
+    def test_lt(self):
+        x1 = Var(3)
+        x2 = Var(3)
+        x3 = Var(4)
+        a = (x1 < x2)
+        b = (x1 < x3)
+        assert a is False
+        assert b is True
+
+    def test_gt(self):
+        x1 = Var(3)
+        x2 = Var(3)
+        x3 = Var(4)
+        a = (x1 > x2)
+        b = (x1 > x3)
+        assert a is False
+        assert b is False
+
+    def test_le(self):
+        x1 = Var(3)
+        x2 = Var(3)
+        x3 = Var(4)
+        a = (x1 <= x2)
+        b = (x1 <= x3)
+        assert a is True
+        assert b is True
+
+    def test_ge(self):
+        x1 = Var(3)
+        x2 = Var(3)
+        x3 = Var(4)
+        a = (x1 >= x2)
+        b = (x1 >= x3)
+        assert a is True
+        assert b is False
+
+
 class Test_Module_Multivariate:
 
     def test_multivar_grad(self):
