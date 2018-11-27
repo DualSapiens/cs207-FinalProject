@@ -43,9 +43,10 @@ class Log(Operation):
 
 class Logistic(Operation):
     """Logistic function f(X) = L/(1+exp(-k(X-x_0)))
+        default: sigmoid function
     """
 
-    def __init__(self, op, x_0, L, k, ID=None):
+    def __init__(self, op, x_0 = 0, L = 1, k = 1, ID=None):
         super().__init__(ID=ID)
         self.op = op if isinstance(op, Operation) else Constant(op)
         self.x_0 = x_0 if isinstance(x_0, Operation) else Constant(x_0)
