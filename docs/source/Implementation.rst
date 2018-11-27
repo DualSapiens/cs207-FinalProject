@@ -18,6 +18,11 @@ The `Operation` Class forms the core data structure for automatic differentiatio
             _value
         Methods:
             __eq__(self, other)
+            __ne__(self, other)
+            __lt__(self, other)
+            __gt__(self, other)
+            __le__(self, other)
+            __ge__(self, other)
             __add__(self, other)
             __radd__(self, other)
             __sub__ (self, other)
@@ -51,11 +56,19 @@ The `Constant` Subclass allows our package to handle constants in a user-defined
 
 Elementary Operations Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Elementary operations include `Addition`, `Multiplication`, `Subtraction`, `Division`, `Power`, `Pos`, and `Neg`, and overload the existing operations. They are defined as subclasses of `Operation`. User-defined functions involving these operations will be instances of an operation subclass, corresponding to the operation applied at the last step in the computational graph.
+Elementary operations include: `Addition`, `Multiplication`, `Subtraction`, `Division`, `Power`, `Pos`, and `Neg`, and overload the existing operations. They are defined as subclasses of `Operation`. User-defined functions involving these operations will be instances of an operation subclass, corresponding to the operation applied at the last step in the computational graph.
 
 Elementary Functions Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Elementary functions include `Sin` and `Cos`, `Exp` and `Log`, and `Sqrt`. A user wishing to define a function with these operations must import them from the `autodiff.math` module prior to defining the function. As with elementary operations, user-defined functions using elementary functions will be instances of the elementary function if it is the last step applied in the computational graph. An external dependency of our package is `numpy`, which allows us to carry out the elementary operations within our subclasses.
+- Trigonometric functions: `Sin`, `Cos`, `Tan`
+- Inverse trigonometric functions: `Arcsin`, `Arccos`, `Arctan`
+- Exponentials: `Exp`
+- Hyperbolic functions: `Sinh`, `Cosh`, `Tanh`
+- Logistic function: `Logistic`
+- Logarithms: `Log`
+- Square root: `Sqrt`
+
+A user wishing to define a function with these operations must import them from the `autodiff.math` module prior to defining the function. As with elementary operations, user-defined functions using elementary functions will be instances of the elementary function if it is the last step applied in the computational graph. An external dependency of our package is `numpy`, which allows us to carry out the elementary operations within our subclasses.
 
 The `Array` Class
 ^^^^^^^^^^^^^^^^^^^^
