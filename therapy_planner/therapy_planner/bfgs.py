@@ -15,7 +15,7 @@ def BFGS(fun,var,xi,tol=1.0e-8,maxiter=100000):
 
     RETURNS
     =======
-    res: the 2-norm of the residual.
+    step: the 2-norm of the final step size.
     Niter: the number of iterations performed.
     """
     try:
