@@ -223,9 +223,7 @@ class Addition(Operation):
         self.op_2 = op_2
 
     def der(self, op):
-        self.evaluate()
-        derivative = 0
-        derivative += self.op_1.der(op)
+        derivative = self.op_1.der(op)
         derivative += self.op_2.der(op)
         return derivative
 
@@ -242,9 +240,7 @@ class Subtraction(Operation):
         self.op_2 = op_2
 
     def der(self, op):
-        self.evaluate()
-        derivative = 0
-        derivative += self.op_1.der(op)
+        derivative = self.op_1.der(op)
         derivative -= self.op_2.der(op)
         return derivative
 
@@ -261,9 +257,7 @@ class Multiplication(Operation):
         self.op_2 = op_2
 
     def der(self, op):
-        self.evaluate()
-        derivative = 0
-        derivative += self.op_2.value * self.op_1.der(op)
+        derivative = self.op_2.value * self.op_1.der(op)
         derivative += self.op_1.value * self.op_2.der(op)
         return derivative
 
@@ -280,10 +274,9 @@ class Division(Operation):
         self.op_2 = op_2
 
     def der(self, op):
-        self.evaluate()
-        derivative = 0
-        derivative += (self.op_2.value * self.op_1.der(op))/(self.op_2.value)**2
-        derivative -= (self.op_1.value * self.op_2.der(op))/(self.op_2.value)**2
+        op_2_value = self.op_2.value
+        derivative = (op_2_value * self.op_1.der(op))/(op_2_value)**2
+        derivative -= (self.op_1.value * self.op_2.der(op))/(op_2_value)**2
         return derivative
 
     def evaluate(self):
@@ -299,13 +292,16 @@ class Power(Operation):
         self.op_2 = op_2
 
     def der(self, op):
-        self.evaluate()
         derivative = 0
-        derivative += self.op_2.value * (self.op_1.value ** (
-                self.op_2.value-1)) * self.op_1.der(op)
-        if self.op_2.der(op) != 0 and self.value != 0:
+        op_2_value = self.op_2.value
+        op_1_value = self.op_1.value
+        op_2_der = self.op_2.der(op)
+        self._value = op_1_value**op_2_value
+        derivative += op_2_value * (op_1_value ** (
+                op_2_value-1)) * self.op_1.der(op)
+        if op_2_der != 0 and self.value != 0:
             # self.op_1.value must be > 0 here!
-            derivative +=  self.value * np.log(self.op_1.value) * self.op_2.der(op)
+            derivative +=  self._value * np.log(op_1_value) * op_2_der
         return derivative
 
     def evaluate(self):
@@ -320,7 +316,6 @@ class Neg(Operation):
         self.op = op
 
     def der(self, op):
-        self.evaluate()
         return -self.op.der(op)
 
     def evaluate(self):
