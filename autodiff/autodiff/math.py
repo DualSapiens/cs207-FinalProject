@@ -11,10 +11,8 @@ class Exp(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return self.value * self.op.der(op)
 
-    from autodiff.autodiff import Var
     def evaluate(self):
         self._value = np.exp(self.op.value)
 
@@ -29,12 +27,13 @@ class Log(Operation):
         self.base = base if isinstance(base, Operation) else Constant(base)
 
     def der(self, op):
-        self.evaluate()
         derivative = 0
-        derivative += (np.log(self.base.value) / self.op.value *
-                       self.op.der(op)) / (np.log(self.base.value)) ** 2
-        derivative -= (np.log(self.op.value) / self.base.value *
-                       self.base.der(op)) / (np.log(self.base.value)) ** 2
+        bv = self.base.value
+        opv = self.op.value
+        derivative += (np.log(bv) / opv *
+                       self.op.der(op)) / (np.log(bv)) ** 2
+        derivative -= (np.log(opv) / bv *
+                       self.base.der(op)) / (np.log(bv)) ** 2
         return derivative
 
     def evaluate(self):
@@ -54,9 +53,12 @@ class Logistic(Operation):
         self.k = k if isinstance(k, Operation) else Constant(k)
 
     def der(self, op):
-        self.evaluate()
-        return self.k.value * self.L.value * np.exp(-self.k.value * (self.op.value - self.x_0.value)) \
-               * np.power(1 + np.exp(-self.k.value * (self.op.value - self.x_0.value)), -2) \
+        opv = self.op.value
+        x_0v = self.x_0.value
+        kv = self.k.value
+        Lv = self.L.value
+        return kv * Lv * np.exp(-kv * (opv - x_0v)) \
+               * np.power(1 + np.exp(-kv * (opv - x_0v)), -2) \
                * self.op.der(op)
 
     def evaluate(self):
@@ -72,7 +74,6 @@ class Sqrt(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return 1. / (2 * self.value) * self.op.der(op)
 
     def evaluate(self):
@@ -88,7 +89,6 @@ class Sin(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return np.cos(self.op.value) * self.op.der(op)
 
     def evaluate(self):
@@ -104,7 +104,6 @@ class Arcsin(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return (1 / np.sqrt(1 - np.square(self.op.value))) * self.op.der(op)
 
     def evaluate(self):
@@ -120,7 +119,6 @@ class Sinh(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return np.cosh(self.op.value) * self.op.der(op)
 
     def evaluate(self):
@@ -136,7 +134,6 @@ class Cos(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return -np.sin(self.op.value) * self.op.der(op)
 
     def evaluate(self):
@@ -152,7 +149,6 @@ class Arccos(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return -(1 / np.sqrt(1 - np.square(self.op.value))) * self.op.der(op)
 
     def evaluate(self):
@@ -168,7 +164,6 @@ class Cosh(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return np.sinh(self.op.value) * self.op.der(op)
 
     def evaluate(self):
@@ -184,7 +179,6 @@ class Tan(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return (1 / np.square(np.cos(self.op.value))) * self.op.der(op)
 
     def evaluate(self):
@@ -200,7 +194,6 @@ class Arctan(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return (1 / (1 + np.square(self.op.value))) * self.op.der(op)
 
     def evaluate(self):
@@ -216,7 +209,6 @@ class Tanh(Operation):
         self.op = op if isinstance(op, Operation) else Constant(op)
 
     def der(self, op):
-        self.evaluate()
         return (1-np.square(self.value)) * self.op.der(op)
 
     def evaluate(self):
