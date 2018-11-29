@@ -91,10 +91,11 @@ def optimize(maps, penalty=False, smoothness=1., tol=1e-8, maxiter=1000):
         # a penalty function to encourage params >= 0
         def positive_params(params,smoothness):
             return sum([Logistic(-p,k=1./smoothness) for p in params])
-
+        
         cost = mean_squared_error(D,Do)
         if penalty:
             cost += positive_params(S,smoothness)
+            
         step, Niter = BFGS(cost,S,np.ones(len(S)),tol=tol,maxiter=maxiter)
 
         sources = [s.value for s in S] # extract fitted parameters
