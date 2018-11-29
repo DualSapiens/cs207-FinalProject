@@ -1,8 +1,7 @@
 import sys
 sys.path.append("../../autodiff")
 sys.path.append("../../therapy_planner/therapy_planner")
-from costfunctions import mean_squared_error
-from costfunctions import positive_params
+from costfunctions import *
 import numpy as np
 from autodiff.autodiff import Var
 from autodiff.math import *
@@ -88,6 +87,8 @@ def optimize(maps, penalty=False, smoothness=1., tol=1e-8, maxiter=1000):
         cost = mean_squared_error(D,Do)
         if penalty:
             cost += positive_params(S,smoothness)
+        cost+=minmaxpenalty(np.ravel(maps['min'])-D)
+        cost+=minmaxpenalty(D-np.ravel(maps['max']))
             
         step, Niter = BFGS(cost,S,np.ones(len(S)),tol=tol,maxiter=maxiter)
 

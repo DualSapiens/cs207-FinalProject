@@ -18,3 +18,9 @@ def mean_squared_error(y,yo):
 # a penalty function to encourage params >= 0
 def positive_params(params,smoothness):
     return sum([Logistic(-p,k=1./smoothness) for p in params])
+
+def approximate_step_function(x,sharpness=5):
+    return Logistic(x,x_0=0.5,L=2,k=sharpness)
+
+def minmaxpenalty(vec):
+    return sum(approximate_step_function(x) for x in vec)
