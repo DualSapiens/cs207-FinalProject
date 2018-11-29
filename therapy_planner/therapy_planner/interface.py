@@ -1,11 +1,12 @@
 import sys
 sys.path.append("../../autodiff")
-
+sys.path.append("../../therapy_planner/therapy_planner")
+from costfunctions import mean_squared_error
+from costfunctions import positive_params
 import numpy as np
 from autodiff.autodiff import Var
 from autodiff.math import *
 from .bfgs import BFGS
-
 
 def read_maps(filename):
     """
@@ -83,14 +84,6 @@ def optimize(maps, penalty=False, smoothness=1., tol=1e-8, maxiter=1000):
         S = np.array([Var() for _ in range(m+n)]) # array of source intensities
         D = np.dot(I,S) # Array of radiation doses
         Do = np.ravel(maps['target']) # Array of target doses
-
-        # define some cost functions (can go into their own module)
-        def mean_squared_error(y,yo):
-            return sum([(yi-yio)**2 for yi,yio in zip(y,yo)])
-
-        # a penalty function to encourage params >= 0
-        def positive_params(params,smoothness):
-            return sum([Logistic(-p,k=1./smoothness) for p in params])
         
         cost = mean_squared_error(D,Do)
         if penalty:
