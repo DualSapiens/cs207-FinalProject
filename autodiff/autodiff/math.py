@@ -28,12 +28,12 @@ class Log(Operation):
 
     def der(self, op):
         derivative = 0
-        bv = self.base.value
-        opv = self.op.value
-        derivative += (np.log(bv) / opv *
-                       self.op.der(op)) / (np.log(bv)) ** 2
-        derivative -= (np.log(opv) / bv *
-                       self.base.der(op)) / (np.log(bv)) ** 2
+        base_value = self.base.value
+        op_value = self.op.value
+        derivative += (np.log(base_value) / op_value *
+                       self.op.der(op)) / (np.log(base_value)) ** 2
+        derivative -= (np.log(op_value) / base_value *
+                       self.base.der(op)) / (np.log(base_value)) ** 2
         return derivative
 
     def evaluate(self):
@@ -53,12 +53,12 @@ class Logistic(Operation):
         self.k = k if isinstance(k, Operation) else Constant(k)
 
     def der(self, op):
-        opv = self.op.value
-        x_0v = self.x_0.value
-        kv = self.k.value
-        Lv = self.L.value
-        return kv * Lv * np.exp(-kv * (opv - x_0v)) \
-               * np.power(1 + np.exp(-kv * (opv - x_0v)), -2) \
+        op_value = self.op.value
+        x_0_value = self.x_0.value
+        k_value = self.k.value
+        L_value = self.L.value
+        return k_value * L_value * np.exp(-k_value * (op_value - x_0_value)) \
+               * np.power(1 + np.exp(-k_value * (op_value - x_0_value)), -2) \
                * self.op.der(op)
 
     def evaluate(self):
