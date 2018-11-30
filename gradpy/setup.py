@@ -7,8 +7,8 @@ with open("README.md", "r") as fh:
 #     requirements = f.read().splitlines()
 
 setuptools.setup(
-    name="autodiff",
-    version="0.0.7",
+    name="gradpy",
+    version="0.0.1",
     author="DualSapiens",
     author_email="",
     description="A package for automatic differentiation",
@@ -22,5 +22,4 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     install_requires=["numpy"]
-    # install_requires=requirements
 )
