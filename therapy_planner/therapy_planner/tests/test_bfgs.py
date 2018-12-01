@@ -1,8 +1,8 @@
 import sys
-sys.path.append("../../autodiff")
+sys.path.append("../../../gradpy")
 
 from ..bfgs import BFGS
-from autodiff.autodiff import Var
+from gradpy.autodiff import Var
 import numpy as np
 
 # Rosenbrock test function
