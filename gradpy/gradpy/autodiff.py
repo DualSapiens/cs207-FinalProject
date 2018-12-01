@@ -37,60 +37,40 @@ class Operation:
 
     def __eq__(self, other):
         if isinstance(other, Operation):
-            if other._value is not None:
-                return self._value == other._value
-            else:
-                raise Exception('The operation does not have a value.')
+            return self.value == other.value
         else:
-            raise TypeError('Value comparison must be between two Operation objects.')
-
+            return self == Constant(other)
 
     def __ne__(self, other):
         if isinstance(other, Operation):
-            if other._value is not None:
-                return self._value != other._value
-            else:
-                raise Exception('The operation does not have a value.')
+            return self.value != other.value
         else:
-            raise TypeError('Value comparison must be between two Operation objects.')
+            return self != Constant(other)
 
     def __lt__(self, other):
         if isinstance(other, Operation):
-            if other._value is not None:
-                return self._value < other._value
-            else:
-                raise Exception('The operation does not have a value.')
+            return self.value < other.value
         else:
-            raise TypeError('Value comparison must be between two Operation objects.')
+            return self < Constant(other)
 
     def __gt__(self, other):
         if isinstance(other, Operation):
-            if other._value is not None:
-                return self._value > other._value
-            else:
-                raise Exception('The operation does not have a value.')
+            return self.value > other.value
         else:
-            raise TypeError('Value comparison must be between two Operation objects.')
+            return self > Constant(other)
 
     def __le__(self, other):
         if isinstance(other, Operation):
-            if other._value is not None:
-                return self._value <= other._value
-            else:
-                raise Exception('The operation does not have a value.')
+            return self.value <= other.value
         else:
-            raise TypeError('Value comparison must be between two Operation objects.')
+            return self <= Constant(other)
 
 
     def __ge__(self, other):
         if isinstance(other, Operation):
-            if other._value is not None:
-                return self._value >= other._value
-            else:
-                raise Exception('The operation does not have a value.')
+            return self.value >= other.value
         else:
-            raise TypeError('Value comparison must be between two Operation objects.')
-
+            return self >= Constant(other)
 
     def __add__(self, other):
         if isinstance(other, Operation):
@@ -135,10 +115,7 @@ class Operation:
             return Power(self, Constant(power))
 
     def __rpow__(self, other):
-        if isinstance(other, Operation):
-            return Power(other, self)
-        else:
-            return Power(Constant(other), self)
+        return Power(Constant(other), self)
     
     def __pos__(self):
         return self

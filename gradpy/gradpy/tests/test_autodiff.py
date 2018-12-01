@@ -15,12 +15,20 @@ class Test_Module_Basic:
     def test_addition(self):
         x = Var(value=5)
         f = 3+x
+        g = x+3
+        assert f.value == 8
+        assert g.value == 8
         assert f.der(x) == 1
+        assert g.der(x) == 1
 
     def test_subtraction(self):
         x = Var(value=5)
         f = 3-x
+        g = x-3
+        assert f.value == -2
+        assert g.value == 2
         assert f.der(x) == -1
+        assert g.der(x) == 1
     
     def test_multivar_subtraction(self):
         x = Var(value=5)
@@ -32,7 +40,11 @@ class Test_Module_Basic:
     def test_mul(self):
         x = Var(value=5)
         f = 3*x
+        g = x*3
+        assert f.value == 15
+        assert g.value == 15
         assert f.der(x) == 3
+        assert g.der(x) == 3
 
     def test_multivar_mul(self):
         x = Var(value=5)
@@ -44,7 +56,11 @@ class Test_Module_Basic:
     def test_div(self):
         x = Var(value=5)
         f = 3/x
+        g = x/2
+        assert f.value == 0.6
+        assert g.value == 2.5
         assert f.der(x) == -0.12
+        assert g.der(x) == 0.5
 
     def test_multivar_div(self):
         x = Var(value=5)
@@ -73,16 +89,19 @@ class Test_Module_Basic:
     def test_pos(self):
         x = Var(value=5)
         f = +x
+        assert f.value == 5
         assert f.der(x) == 1
 
     def test_neg(self):
         x = Var(value=5)
         f = -x
+        assert f.value == -5
         assert f.der(x) == -1
 
     def test_sin(self):
         x = Var(value=np.pi/2)
         f = Sin(x)
+        assert np.isclose(f.value, 1)
         assert np.isclose(f.der(x), 0)
 
     def test_sinh(self):
@@ -106,12 +125,14 @@ class Test_Module_Basic:
     def test_cos(self):
         x = Var(value=np.pi/2)
         f = Cos(x)
+        assert np.isclose(f.value, 0)
         assert np.isclose(f.der(x), -1)
 
     def test_tan(self):
         x = Var(value=0)
-        f_1 = Tan(x)
-        assert np.isclose(f_1.der(x), 1)
+        f = Tan(x)
+        assert np.isclose(f.value, 0)
+        assert np.isclose(f.der(x), 1)
         
     def test_arcsin(self):
         x = Var(value=1)
@@ -199,6 +220,12 @@ class Test_Module_Basic:
         f = Sin(x1) + Cos(x2)
         assert f.der(x1) == -0.9899924966004454
 
+    def test_constant(self):
+        with pytest.raises(Exception):
+            x = Constant()
+        x = Constant(5)
+        assert x.value == 5
+
     def test_array(self):
         x1 = Var(3)
         x2 = Var(4)
@@ -219,8 +246,12 @@ class Test_Module_Basic:
         x3 = Var(4)
         a = (x1 == x2)
         b = (x1 == x3)
+        c = (x1 == 5)
+        d = (3 == x2)
         assert a is True
         assert b is False
+        assert c is False
+        assert d is True
 
     def test_ne(self):
         x1 = Var(3)
@@ -228,8 +259,12 @@ class Test_Module_Basic:
         x3 = Var(4)
         a = (x1 != x2)
         b = (x1 != x3)
+        c = (x1 != 5)
+        d = (3 != x2)
         assert a is False
         assert b is True
+        assert c is True
+        assert d is False
 
     def test_lt(self):
         x1 = Var(3)
@@ -237,8 +272,12 @@ class Test_Module_Basic:
         x3 = Var(4)
         a = (x1 < x2)
         b = (x1 < x3)
+        c = (x1 < 5)
+        d = (3 < x2)
         assert a is False
         assert b is True
+        assert c is True
+        assert d is False
 
     def test_gt(self):
         x1 = Var(3)
@@ -246,8 +285,12 @@ class Test_Module_Basic:
         x3 = Var(4)
         a = (x1 > x2)
         b = (x1 > x3)
+        c = (x1 > 5)
+        d = (3 > x2)
         assert a is False
         assert b is False
+        assert c is False
+        assert d is False
 
     def test_le(self):
         x1 = Var(3)
@@ -255,8 +298,12 @@ class Test_Module_Basic:
         x3 = Var(4)
         a = (x1 <= x2)
         b = (x1 <= x3)
+        c = (x1 <= 5)
+        d = (3 <= x2)
         assert a is True
         assert b is True
+        assert c is True
+        assert d is True
 
     def test_ge(self):
         x1 = Var(3)
@@ -264,8 +311,12 @@ class Test_Module_Basic:
         x3 = Var(4)
         a = (x1 >= x2)
         b = (x1 >= x3)
+        c = (x1 >= 5)
+        d = (3 >= x2)
         assert a is True
         assert b is False
+        assert c is False
+        assert d is True
 
 
 class Test_Module_Multivariate:
@@ -281,6 +332,7 @@ class Test_Module_Multivariate:
         y = Var(value=2)
         f = Array([2*x**3 + 3*y**2,
                    5./x - 2./y**2])
+        assert np.all(f.value == [262, 0.5])
         assert np.all(f.grad([x,y]) == [[150, 12],
                                         [-0.2, 0.5]])
 
