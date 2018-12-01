@@ -68,7 +68,7 @@ Elementary Functions Classes
 - Logarithms: `Log`
 - Square root: `Sqrt`
 
-A user wishing to define a function with these operations must import them from the `autodiff.math` module prior to defining the function. As with elementary operations, user-defined functions using elementary functions will be instances of the elementary function if it is the last step applied in the computational graph. An external dependency of our package is `numpy`, which allows us to carry out the elementary operations within our subclasses.
+A user wishing to define a function with these operations must import them from the `gradpy.math` module prior to defining the function. As with elementary operations, user-defined functions using elementary functions will be instances of the elementary function if it is the last step applied in the computational graph. An external dependency of our package is `numpy`, which allows us to carry out the elementary operations within our subclasses.
 
 The `Array` Class
 ^^^^^^^^^^^^^^^^^^^^
@@ -83,7 +83,7 @@ The `Array` Class is used to define vector-valued functions. A user wishing to d
             der(self, var_op)
             grad(self, var_ops)
 
-An initialized instance of the `Array` class supports indexing and entry re-assignment (through `__getitem__` and `__setitem__`). Note that instances of the `Array` Class are not themselves `autodiff Operation` objects; rather, the components of an `Array` instance are `autodiff Operation` objects.
+An initialized instance of the `Array` class supports indexing and entry re-assignment (through `__getitem__` and `__setitem__`). Note that instances of the `Array` Class are not themselves `Operation` objects; rather, the components of an `Array` instance are `Operation` objects.
 
 The `IDAllocator` Class
 ^^^^^^^^^^^^^^^^^^^^^^^^^

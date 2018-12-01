@@ -14,9 +14,7 @@ AutoDiff Documentation
 
 Introduction
 --------------
-The *autodiff* package implements `automatic differentiation`_, a technique
-for computing
-derivatives of functions that is distinct from both symbolic and numerical differentiation.
+The *gradpy* package, through its primary module *autodiff*, implements `automatic differentiation`_, a technique for computing derivatives of functions that is distinct from both symbolic and numerical differentiation.
 
 The primary advantage of automatic differentiation is its ability to handle
 complicated functions without sacrificing the accuracy of the computed

@@ -10,7 +10,7 @@
 
 **Members:** Jovana Andrejevic, Gopal Kotecha, Jay Li, Ziyi Zhou
 
-This is the main repository for the `autodiff` package.
+This is the main repository for the `gradpy` package, which includes an `autodiff` module for automatic differentiation, and a `math` module for compatibility with special functions.
 The **latest [documentation]** is hosted on **readthedocs**.
 
 [documentation]: https://autodiff.readthedocs.io/en/latest
