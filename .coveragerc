@@ -3,7 +3,7 @@
 branch = True
 omit =
     */tests/*
-    autodiff/setup.py
+    gradpy/setup.py
 
 
 [report]
