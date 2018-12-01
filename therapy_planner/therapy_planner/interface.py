@@ -145,7 +145,7 @@ class PlannerInterface:
         else:
             total_dose = np.sum(self.dose_map)
             avg_dose = np.mean(self.dose_map)
-            contents = "Beam intensity: "+"%.2f W/cm^2"%self.beam+"\n"+ \
+            contents = "Beam intensity: "+"%.2f mW/cm^2"%self.beam+"\n"+ \
                        "Horizontal beam exposure time: "+"%d sec."%len(self.horiz_collimator["left"])+"\n"+ \
                        "Vertical beam exposure time: "+"%d sec."%len(self.vert_collimator["right"])+"\n" \
                        "Total accumulated dose: "+"%.2f Gy"%total_dose+"\n" \
