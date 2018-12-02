@@ -6,9 +6,41 @@ from gradpy.math import *
 from .bfgs import BFGS
 from .costfunctions import *
 
+from enum import Enum
+
+class BeamDirection(Enum):
+    Horizontal = 1 # beam propagating along x
+    Vertical = 2 # beam propagating along y
+
+class Beam:
+    def __init__(self, direction):
+        if direction not in [BeamDirection.Horizontal,BeamDirection.Vertical]:
+            raise Exception("Invalid beam direction.")
+        else:
+            self.direction = direction
+            self.name = direction.name+" beam"
+
+    def solve(self, beamlets, exposure_time):
+        """
+        Compute beam intensity and collimator aperture sequence
+        based on optimized beamlets and given exposure time.
+        """
+        self.intensity = np.max(beamlets)/exposure_time
+        profile = np.array([0] + [(b//self.intensity+np.round(b%self.intensity)/self.intensity).astype(np.int) \
+                  for b in beamlets] + [0],dtype=np.int)
+        keys = ["left","right"]
+        self.collimator = {"left": [],"right": []}
+        x = 0
+        for a,b in zip(profile[:-1],profile[1:]):
+            self.collimator[keys[(a>b).astype(np.int)]] += [x for _ in range(min([a,b]),max([a,b]))]
+            x += 1
+        self.beamlets = self.intensity*profile[1:-1]
+
 class PlannerInterface:
     def __init__(self, filename):
         self.datafile = filename
+        self.horiz_beam = Beam(BeamDirection.Horizontal)
+        self.vert_beam = Beam(BeamDirection.Vertical)
         self.read_maps()
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
@@ -73,30 +105,28 @@ class PlannerInterface:
         :param tol: stopping criterion for step size in optimization
         :param maxiter: maximum number of iterations in optimization
 
-        :return profile_values: the accumulated intensity profiles at each beam location,
-                                listed first down all rows, then across all columns
-        :return dose_map: the accumulated dose map at the optimal intensity profiles, of the same shape as the input maps
+        :return dose_map: the accumulated dose map at the optimized collimator sequences, of the same shape as the input maps
+        :return horiz_beam: the horizontal beam object, with beam intensity, collimator, and beamlets attributes 
+        :return vert_beam: the vertical beam object, with beam intensity, collimator, and beamlets attributes 
 
         See optimize_demo.ipynb for example
         """
         m,n = self.shape
-        self.exp_time = exposure_time
 
-        # Step 1: Optimize intensity profiles for each beam.
-        profiles, dose = self.optimize_intensity_profiles(smoothness, tol, maxiter, bounds)
+        # Step 1: Optimize intensity profiles (beamlets) for each beam.
+        beamlets, dose = self.optimize_beamlets(smoothness, tol, maxiter, bounds)
         
-        # Step 2: Compute the beam intensity and sequence of apertures from the optimized profiles.
-        self.compute_aperture_sequences(profiles)
+        # Step 2: Compute the beam intensities and sequence of collimator apertures from the optimized beamlets.
+        self.solve_beam_collimators(beamlets, exposure_time)
         
         # Collect values for output.
-        profile_values = [p.value for p in profiles]
+        beamlet_values = [b.value for b in beamlets]
         dose_map = np.array([d.value for d in dose]).reshape(m,n)
-        self.profiles = profile_values
         self.dose_map = dose_map
         self.opt = True # set optimization flag
-        return self.beam, profile_values, dose_map, self.horiz_collimator, self.vert_collimator
+        return dose_map, self.horiz_beam, self.vert_beam
 
-    def optimize_intensity_profiles(self, smoothness, tol, maxiter, bounds):
+    def optimize_beamlets(self, smoothness, tol, maxiter, bounds):
         m,n = self.shape
         attenuation = np.zeros((m*n,m+n)) # matrix of attenuation factors
         mu = 0.07 # attenuation coefficient in human tissue (brain, lung, blood) for 1 MeV photon energy
@@ -106,38 +136,26 @@ class PlannerInterface:
         for j in range(n):
             attenuation[j:m*n:n,m+j] = np.exp(-mu*np.arange(m))
 
-        profiles = np.array([Var() for _ in range(m+n)]) # intensity profiles in vertical and horizontal directions
-        dose = np.dot(attenuation,profiles) # accumulated dose in each grid cell
+        beamlets = np.array([Var() for _ in range(m+n)]) # individual beamlets for optimization problem
+        dose = np.dot(attenuation,beamlets) # accumulated dose in each grid cell
         cost = mean_squared_error(dose,np.ravel(self._maps['target'])) \
-             + pos_penalty(profiles,smoothness)
+             + pos_penalty(beamlets,smoothness)
         if bounds:
             cost+=minmax_penalty(np.ravel(self._maps['min'])-dose)
             cost+=minmax_penalty(dose-np.ravel(self._maps['max']))
            
-        step, Niter = BFGS(cost,profiles,np.ones(len(profiles)),tol=tol,maxiter=maxiter)
-        return profiles, dose
+        step, Niter = BFGS(cost,beamlets,np.ones(len(beamlets)),tol=tol,maxiter=maxiter)
+        return beamlets, dose
 
-    def compute_aperture_sequences(self, profiles):
+    def solve_beam_collimators(self, beamlets, exposure_time):
         m,n = self.shape
-        profile_values = [p.value for p in profiles] # extract fitted intensity values
-        beam = np.max(profile_values)/self.exp_time
-        self.beam = beam
-        horiz_profile = np.array([0] + [(p//beam+np.round(p%beam)/beam).astype(np.int) for p in profile_values[:m]] + [0],dtype=np.int)
-        vert_profile = np.array([0] + [(p//beam+np.round(p%beam)/beam).astype(np.int) for p in profile_values[m:]] + [0],dtype=np.int)
-        self.horiz_collimator = {"left": [],"right": []}
-        self.vert_collimator = {"left": [],"right": []}
-        keys = ["left","right"]
-        x = 0
-        for a,b in zip(horiz_profile[:-1],horiz_profile[1:]):
-            self.horiz_collimator[keys[(a>b).astype(np.int)]] += [x for _ in range(min([a,b]),max([a,b]))]
-            x += 1
-        x = 0
-        for a,b in zip(vert_profile[:-1],vert_profile[1:]):
-            self.vert_collimator[keys[(a>b).astype(np.int)]] += [x for _ in range(min([a,b]),max([a,b]))]
-            x += 1
-        profile_values = beam*np.hstack([horiz_profile[1:-1],vert_profile[1:-1]]) # set new profile values incorporating beam resolution
-        for p,val in zip(profiles,profile_values):
-            p.set_value(val)
+        horiz_beamlets = [b.value for b in beamlets[:m]]
+        vert_beamlets = [b.value for b in beamlets[m:]]
+        self.horiz_beam.solve(horiz_beamlets, exposure_time)
+        self.vert_beam.solve(vert_beamlets, exposure_time)
+        beamlet_values = np.hstack([self.horiz_beam.beamlets,self.vert_beam.beamlets]) # set new beamlets incorporating exposure time
+        for b,val in zip(beamlets,beamlet_values):
+            b.set_value(val)
 
     def print_summary(self):
         if not self.opt:
@@ -145,11 +163,12 @@ class PlannerInterface:
         else:
             total_dose = np.sum(self.dose_map)
             avg_dose = np.mean(self.dose_map)
-            contents = "Beam intensity: "+"%.2f mW/cm^2"%self.beam+"\n"+ \
-                       "Horizontal beam exposure time: "+"%d sec."%len(self.horiz_collimator["left"])+"\n"+ \
-                       "Vertical beam exposure time: "+"%d sec."%len(self.vert_collimator["right"])+"\n" \
-                       "Total accumulated dose: "+"%.2f Gy"%total_dose+"\n" \
-                       "Average dose per unit area: "+"%.2f Gy/cm^2"%avg_dose+"\n"
+            contents = ""
+            for beam in [self.horiz_beam, self.vert_beam]:
+                contents += beam.name+" intensity: "+"%.2f mW/cm^2"%beam.intensity+"\n"+ \
+                            beam.name+" exposure time: "+"%d sec."%len(beam.collimator["left"])+"\n"
+            contents += "Total accumulated dose: "+"%.2f Gy"%total_dose+"\n" \
+                        "Average dose per unit area: "+"%.2f Gy/cm^2"%avg_dose+"\n"
             print(contents)
 
 
