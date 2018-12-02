@@ -10,6 +10,7 @@ AutoDiff Documentation
    Background
    Software Organization
    Implementation
+   Featured Application
    Future
 
 Introduction
