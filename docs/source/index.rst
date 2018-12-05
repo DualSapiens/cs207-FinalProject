@@ -11,7 +11,7 @@ AutoDiff Documentation
    Software Organization
    Implementation
    Featured Application
-   Future
+   Summary and Future
 
 Introduction
 --------------
