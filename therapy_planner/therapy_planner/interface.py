@@ -114,14 +114,31 @@ class PlannerInterface:
         m,n = self.shape
 
         # Step 1: Optimize intensity profiles (beamlets) for each beam.
-        beamlets, dose = self.optimize_beamlets(smoothness, tol, maxiter, bounds)
-        
+        beamlets, dose, found = self.optimize_beamlets(smoothness, tol, maxiter, bounds)
+
+        # Handle the case when a minimum to the cost functions cannot be found by BFGS
+        if found is False:
+            print("The minimum cannot be found given the cost functions and the number of iterations.")
+            return None
+
         # Step 2: Compute the beam intensities and sequence of collimator apertures from the optimized beamlets.
         self.solve_beam_collimators(beamlets, exposure_time)
         
         # Collect values for output.
         beamlet_values = [b.value for b in beamlets]
         dose_map = np.array([d.value for d in dose]).reshape(m,n)
+
+        # Check whether the minimum at the cost functions meets the constraints
+        v = False
+        if np.sum(dose_map > self._maps['max']) != 0:
+            print("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
+            v = True
+        if np.sum(dose_map < self._maps['min']) != 0:
+            print("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
+            v = True
+        if v is True:
+            return None
+
         self.dose_map = dose_map
         self.opt = True # set optimization flag
         return dose_map, self.horiz_beam, self.vert_beam
@@ -144,8 +161,8 @@ class PlannerInterface:
             cost+=minmax_penalty(np.ravel(self._maps['min'])-dose)
             cost+=minmax_penalty(dose-np.ravel(self._maps['max']))
            
-        step, Niter = BFGS(cost,beamlets,np.ones(len(beamlets)),tol=tol,maxiter=maxiter)
-        return beamlets, dose
+        step, Niter, found = BFGS(cost,beamlets,np.ones(len(beamlets)),tol=tol,maxiter=maxiter)
+        return beamlets, dose, found
 
     def solve_beam_collimators(self, beamlets, exposure_time):
         m,n = self.shape

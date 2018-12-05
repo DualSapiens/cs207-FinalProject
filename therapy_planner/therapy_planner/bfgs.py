@@ -18,25 +18,28 @@ def BFGS(fun,var,xi,tol=1.0e-8,maxiter=100000):
     step: the 2-norm of the final step size.
     Niter: the number of iterations performed.
     """
+
+    found = False  # A variable to indicate whether the minimum to the cost function is found
     try:
         len(fun)
         raise Exception("Function must be scalar-valued.")
     except TypeError:
         try:
-            len(var) # multivariate function
-        except TypeError: # univariate function
+            len(var)  # multivariate function
+        except TypeError:  # univariate function
             var = [var]
             xi = [xi]
         for v,val in zip(var,xi):
             v.set_value(val)
         s = 1.0e20
-        Hinv = np.identity(len(var)) # approx inverse Hessian
+        Hinv = np.identity(len(var))  # approx inverse Hessian
         Niter = 0
         while True:
-            if np.linalg.norm(s)<=tol:
+            if np.linalg.norm(s) <= tol:
+                found = True  # Set to True because minimum has been found
                 print("Minimum found.")
                 break
-            elif Niter==maxiter:
+            elif Niter == maxiter:
                 print("Reached maximum number of iterations.")
                 break
             else:
@@ -50,4 +53,4 @@ def BFGS(fun,var,xi,tol=1.0e-8,maxiter=100000):
                 Hinv = np.dot((np.identity(len(var))-rho*np.outer(s,y)),\
                     np.dot(Hinv,(np.identity(len(var))-rho*np.outer(y,s)))) + rho*np.outer(s,s)
                 Niter += 1
-        return np.linalg.norm(s), Niter
+        return np.linalg.norm(s), Niter, found
