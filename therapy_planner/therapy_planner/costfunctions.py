@@ -10,7 +10,7 @@ from gradpy.math import *
 
 #Define an approximate step function with a tunable sharpness parameter
 def approximate_step_function(x,sharpness=5):
-    return Logistic(x,x_0=0.5,L=2,k=sharpness)
+    return Logistic(x,x_0=0.5,L=2,k=sharpness)  #Logistic function f(X) = L/(1+exp(-k(X-x_0)))
 
 # a penalty function to encourage params >= 0
 def pos_penalty(p,smoothness):
