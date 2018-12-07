@@ -1,5 +1,5 @@
 Summary and Future
-========
+===================
 
 So far, we have developed the `gradpy` package, which enables users to calculate exact derivatives and Jacobian
 matrix with respect to their input functions and variables. We cover the needs of calculating the derivatives on the most

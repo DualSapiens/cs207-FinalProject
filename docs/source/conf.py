@@ -19,7 +19,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = 'AutoDiff'
+# project = 'AutoDiff'
+project = 'Gradpy'
 copyright = '2018, DualSapiens'
 author = 'DualSapiens'
 
@@ -166,7 +167,8 @@ texinfo_documents = [
 # -- Options for Epub output -------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = project
+# epub_title = project
+epub_title = 'AutoDiff'
 
 # The unique identifier of the text. This can be a ISBN number
 # or the project homepage.
