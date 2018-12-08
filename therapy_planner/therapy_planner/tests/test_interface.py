@@ -24,8 +24,9 @@ class TestBeam:
         beamlets = np.array([1, 7, 9, 8, 8, 7, 2, 10, 3])
         intensity = 1.
         beam.solve(beamlets, intensity)
-        assert beam.collimator["left"] == [0, 1, 1, 1, 1, 1, 1, 2, 2, 7, 7, 7 ,7 ,7 ,7 ,7, 7]
+        assert beam.collimator["left"] == [0, 1, 1, 1, 1, 1, 1, 2, 2, 7, 7, 7, 7, 7, 7, 7, 7]
         assert beam.collimator["right"] == [3, 5, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9]
+
 
 class TestInterface:
     def test_read_maps(self):
@@ -58,4 +59,21 @@ class TestInterface:
         min_map = np.array([[0, 0, 0],
                             [0.1, 0, 0.5],
                             [0, 0, 0]])
+        assert_array_equal(maps["min"], min_map)
+
+    def test_missing_values_map(self):
+        missing_value = np.NaN
+        plan = PlannerInterface(os.path.join(__location__, 'test_missing_values.map'))
+        maps = plan.get_maps()
+        target_map = np.array([[1, missing_value, 3],
+                               [4, 5, 6.3],
+                               [missing_value, 8, 9]])
+        assert_array_equal(maps["target"], target_map)
+        max_map = np.array([[5, 5, missing_value],
+                            [5.1, 5, 5],
+                            [missing_value, 5.2, 5]])
+        assert_array_equal(maps['max'], max_map)
+        min_map = np.array([[0, 0, missing_value],
+                            [0.2, 0.5, missing_value],
+                            [missing_value, 0, 0]])
         assert_array_equal(maps["min"], min_map)
