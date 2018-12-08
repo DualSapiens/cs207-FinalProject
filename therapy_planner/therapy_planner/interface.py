@@ -21,6 +21,8 @@ class Beam:
         else:
             self.direction = direction
             self.name = direction.name+" beam"
+        self.collimator = None
+        self.beamlets = None
 
     def solve(self, beamlets, exposure_time):
         """
@@ -29,12 +31,12 @@ class Beam:
         """
         self.intensity = np.max(beamlets)/exposure_time
         profile = np.array([0] + [(b//self.intensity+np.round(b%self.intensity)/self.intensity).astype(np.int) \
-                  for b in beamlets] + [0],dtype=np.int)
-        keys = ["left","right"]
-        self.collimator = {"left": [],"right": []}
+                                  for b in beamlets] + [0], dtype=np.int)
+        keys = ["left", "right"]
+        self.collimator = {"left": [], "right": []}
         x = 0
-        for a,b in zip(profile[:-1],profile[1:]):
-            self.collimator[keys[(a>b).astype(np.int)]] += [x for _ in range(min([a,b]),max([a,b]))]
+        for a,b in zip(profile[:-1], profile[1:]):
+            self.collimator[keys[(a > b).astype(np.int)]] += [x for _ in range(min([a, b]), max([a, b]))]
             x += 1
         self.beamlets = self.intensity*profile[1:-1]
 
@@ -114,22 +116,20 @@ class PlannerInterface:
 
         See optimize_demo.ipynb for example
         """
-        m,n = self.shape
+        m, n = self.shape
 
         # Step 1: Optimize intensity profiles (beamlets) for each beam.
         beamlets, dose, found = self.optimize_beamlets(smoothness, tol, maxiter, bounds)
 
         # Handle the case when a minimum to the cost functions cannot be found by BFGS
         if found is False:
-            print("The minimum cannot be found given the cost functions and the number of iterations.")
-            return None
+            raise Exception("The minimum cannot be found given the cost functions and the number of iterations.")
 
         # Step 2: Compute the beam intensities and sequence of collimator apertures from the optimized beamlets.
         self.solve_beam_collimators(beamlets, exposure_time)
         
         # Collect values for output.
-        beamlet_values = [b.value for b in beamlets]
-        dose_map = np.array([d.value for d in dose]).reshape(m,n)
+        dose_map = np.array([d.value for d in dose]).reshape(m, n)
 
         # Check whether the minimum at the cost functions meets the constraints
         if np.sum(dose_map > self._maps['max']) != 0:
