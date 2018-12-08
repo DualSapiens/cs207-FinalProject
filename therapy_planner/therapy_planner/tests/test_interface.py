@@ -24,8 +24,9 @@ class TestBeam:
         beamlets = np.array([1, 7, 9, 8, 8, 7, 2, 10, 3])
         intensity = 1.
         beam.solve(beamlets, intensity)
-        assert beam.collimator["left"] == [0, 1, 1, 1, 1, 1, 1, 2, 2, 7, 7, 7 ,7 ,7 ,7 ,7, 7]
+        assert beam.collimator["left"] == [0, 1, 1, 1, 1, 1, 1, 2, 2, 7, 7, 7, 7, 7, 7, 7, 7]
         assert beam.collimator["right"] == [3, 5, 6, 6, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9]
+
 
 class TestInterface:
     def test_read_maps(self):
