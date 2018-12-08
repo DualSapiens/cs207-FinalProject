@@ -8,9 +8,11 @@ from .costfunctions import *
 
 from enum import Enum
 
+
 class BeamDirection(Enum):
-    Horizontal = 1 # beam propagating along x
-    Vertical = 2 # beam propagating along y
+    Horizontal = 1  # beam propagating along x
+    Vertical = 2  # beam propagating along y
+
 
 class Beam:
     def __init__(self, direction):
@@ -35,6 +37,7 @@ class Beam:
             self.collimator[keys[(a>b).astype(np.int)]] += [x for _ in range(min([a,b]),max([a,b]))]
             x += 1
         self.beamlets = self.intensity*profile[1:-1]
+
 
 class PlannerInterface:
     def __init__(self, filename):
@@ -129,15 +132,10 @@ class PlannerInterface:
         dose_map = np.array([d.value for d in dose]).reshape(m,n)
 
         # Check whether the minimum at the cost functions meets the constraints
-        v = False
         if np.sum(dose_map > self._maps['max']) != 0:
-            print("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
-            v = True
+            raise Exception("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
         if np.sum(dose_map < self._maps['min']) != 0:
-            print("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
-            v = True
-        if v is True:
-            return None
+            raise Exception("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
 
         self.dose_map = dose_map
         self.opt = True # set optimization flag
@@ -187,6 +185,3 @@ class PlannerInterface:
             contents += "Total accumulated dose: "+"%.2f Gy"%total_dose+"\n" \
                         "Average dose per unit area: "+"%.2f Gy/cm^2"%avg_dose+"\n"
             print(contents)
-
-
-
