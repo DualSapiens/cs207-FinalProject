@@ -1,6 +1,7 @@
 import sys
 sys.path.append("../../gradpy")
 import numpy as np
+import matplotlib.pyplot as plt
 from gradpy.autodiff import Var
 from gradpy.math import *
 from .bfgs import BFGS
@@ -24,12 +25,12 @@ class Beam:
         self.collimator = None
         self.beamlets = None
 
-    def solve(self, beamlets, exposure_time):
+    def solve(self, beamlets, intensity):
         """
-        Compute beam intensity and collimator aperture sequence
-        based on optimized beamlets and given exposure time.
+        Compute beam exposure time and collimator aperture sequence
+        based on optimized beamlets and beam intensity.
         """
-        self.intensity = np.max(beamlets)/exposure_time
+        self.intensity = intensity
         profile = np.array([0] + [(b//self.intensity+np.round(b%self.intensity)/self.intensity).astype(np.int) \
                                   for b in beamlets] + [0], dtype=np.int)
         keys = ["left", "right"]
@@ -39,6 +40,7 @@ class Beam:
             self.collimator[keys[(a > b).astype(np.int)]] += [x for _ in range(min([a, b]), max([a, b]))]
             x += 1
         self.beamlets = self.intensity*profile[1:-1]
+        self.exposure_time = len(self.collimator["left"])
 
 
 class PlannerInterface:
@@ -47,8 +49,9 @@ class PlannerInterface:
         :param filename: The filename of the text file where user defined the therapy maps (as in the format of the demo.map)
         """
         self.datafile = filename
-        self.horiz_beam = Beam(BeamDirection.Horizontal)
-        self.vert_beam = Beam(BeamDirection.Vertical)
+        horiz_beam = Beam(BeamDirection.Horizontal)
+        vert_beam = Beam(BeamDirection.Vertical)
+        self._beams = [horiz_beam, vert_beam]
         self._maps = self.read_maps()
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
@@ -104,17 +107,16 @@ class PlannerInterface:
     def get_maps(self):
         return self._maps
 
-    def optimize(self, exposure_time, smoothness=1., tol=1e-8, maxiter=1000, bounds=False):
+    def optimize(self, intensity, smoothness=1., tol=1e-8, maxiter=1000, bounds=False):
         """
-        :param maps: dictionary of target, min, and max dose maps
-        :param exposure_time: the duration over which to deliver the radiation dose
+        :param intensity: the intensity of the incident beams
         :param smoothness: the smoothness of the logistic function used in the penalty term
         :param tol: stopping criterion for step size in optimization
         :param maxiter: maximum number of iterations in optimization
 
-        :return dose_map: the accumulated dose map at the optimized collimator sequences, of the same shape as the input maps
-        :return horiz_beam: the horizontal beam object, with beam intensity, collimator, and beamlets attributes 
-        :return vert_beam: the vertical beam object, with beam intensity, collimator, and beamlets attributes 
+        :computes dose_map: the accumulated dose map at the optimized collimator sequences, of the same shape as the input maps
+        :computes horiz_beam: the horizontal beam object, with beam intensity, collimator, and beamlets attributes 
+        :computes vert_beam: the vertical beam object, with beam intensity, collimator, and beamlets attributes 
 
         See optimize_demo.ipynb for example
         """
@@ -127,21 +129,23 @@ class PlannerInterface:
         if found is False:
             raise Exception("The minimum cannot be found given the cost functions and the number of iterations.")
 
-        # Step 2: Compute the beam intensities and sequence of collimator apertures from the optimized beamlets.
-        self.solve_beam_collimators(beamlets, exposure_time)
+        # Step 2: Compute the beam exposure times and sequence of collimator apertures from the optimized beamlets.
+        self.solve_beam_collimators(beamlets, intensity)
         
         # Collect values for output.
         dose_map = np.array([d.value for d in dose]).reshape(m, n)
 
-        # Check whether the minimum at the cost functions meets the constraints
-        if np.sum(dose_map > self._maps['max']) != 0:
-            raise Exception("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
-        if np.sum(dose_map < self._maps['min']) != 0:
-            raise Exception("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
+        if bounds:
+            # Check whether the minimum at the cost functions meets the constraints
+            if np.sum(dose_map > self._maps['max']) != 0:
+                raise Exception("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
+            if np.sum(dose_map < self._maps['min']) != 0:
+                raise Exception("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
 
-        self.dose_map = dose_map
+        self._maps["optimized"] = dose_map
+        self._maps["difference"] = dose_map - self._maps["target"] # the difference dose map - target map
+        self._maps["error"] = np.abs(self._maps["difference"]) # magnitude of difference map
         self.opt = True # set optimization flag
-        return dose_map, self.horiz_beam, self.vert_beam
 
     def optimize_beamlets(self, smoothness, tol, maxiter, bounds):
         m,n = self.shape
@@ -158,32 +162,92 @@ class PlannerInterface:
         cost = mean_squared_error(dose,np.ravel(self._maps['target'])) \
              + pos_penalty(beamlets,smoothness)
         if bounds:
-            cost+=minmax_penalty(np.ravel(self._maps['min'])-dose)
-            cost+=minmax_penalty(dose-np.ravel(self._maps['max']))
+            cost+=minmax_penalty(np.ravel(self._maps['min'])-dose, smoothness)
+            cost+=minmax_penalty(dose-np.ravel(self._maps['max']), smoothness)
            
         step, Niter, found = BFGS(cost,beamlets,np.ones(len(beamlets)),tol=tol,maxiter=maxiter)
         return beamlets, dose, found
 
-    def solve_beam_collimators(self, beamlets, exposure_time):
+    def solve_beam_collimators(self, beamlets, intensity):
         m,n = self.shape
         horiz_beamlets = [b.value for b in beamlets[:m]]
         vert_beamlets = [b.value for b in beamlets[m:]]
-        self.horiz_beam.solve(horiz_beamlets, exposure_time)
-        self.vert_beam.solve(vert_beamlets, exposure_time)
-        beamlet_values = np.hstack([self.horiz_beam.beamlets,self.vert_beam.beamlets]) # set new beamlets incorporating exposure time
+        self._beams[0].solve(horiz_beamlets, intensity)
+        self._beams[1].solve(vert_beamlets, intensity)
+        beamlet_values = np.hstack([self._beams[0].beamlets,self._beams[1].beamlets]) # set new beamlets incorporating intensity
         for b,val in zip(beamlets,beamlet_values):
             b.set_value(val)
+
+    def plot_map(self, name, ax=None, cmap='viridis_r', fontsize=14):
+        """
+        param name: name of map to plot; before optimization, valid names are "target", "min", and "max"
+                                         after optimization, additional maps are "optimized", "difference", and "error".
+        param ax: the axes to which the plot should be added.
+        param cmap: the colormap to use (default 'viridis_r')
+        param fontsize: the font size for axis labels and text (default 14)
+        """
+        try:
+            dose_map = self._maps[name]
+        except KeyError:
+            raise Exception('Map "'+name+'" does not exist.')
+        m,n = dose_map.shape
+        if ax is None:
+            show = True
+            fig, ax = plt.subplots(1,1,figsize=(n+m/2,m))
+        else:
+            show = False
+        im = ax.imshow(dose_map, cmap=cmap)
+        cbar = ax.figure.colorbar(im, ax=ax)
+        cbar.ax.set_ylabel("dose", rotation=-90, va="bottom", size=14)
+        ax.tick_params(top=True, bottom=False,
+                       labeltop=True, labelbottom=False)
+        ax.set_xticks([])
+        ax.set_yticks([])
+        textcolors=["black", "white"]
+        threshold = im.norm(dose_map.max())/2.
+        for i in range(m):
+            for j in range(n):
+                text = ax.text(j,i,np.round(dose_map[i,j],2),size=fontsize,
+                               ha="center", va="center",color=textcolors[(im.norm(dose_map[i,j])>threshold).astype(np.int)])
+        ax.text(0.5,-0.1,"{} map".format(name),
+                horizontalalignment='center', verticalalignment='center',
+                transform=ax.transAxes, size=14)
+        if show:
+            plt.show()
+
+    def plot_collimators(self):
+        fig, (ax1, ax2) = plt.subplots(1,2,figsize=(12,6))
+        m,n = self.shape
+        for t,(left, right) in enumerate(zip(self._beams[0].collimator["left"],self._beams[0].collimator["right"])):
+            ax1.plot([t,t],[m+1,m-left],lw=10,color=[0.2,0.6,0.7])
+            ax1.plot([t,t],[m-right,-1],lw=10,color=[0.2,0.6,0.7])
+        ax1.axhline(0,linestyle='dashed',color='k')
+        ax1.axhline(m,linestyle='dashed',color='k')
+        ax1.axhspan(0,m,alpha=0.5,color=[1.0,1.0,0.1])
+        ax1.set_xlim(-0.1,len(self._beams[0].collimator["left"]))
+        ax1.set_xlabel('exposure time',size=14)
+        ax1.set_title('horizontal beam collimator apertures',size=14)
+        for t,(left, right) in enumerate(zip(self._beams[1].collimator["left"],self._beams[1].collimator["right"])):
+            ax2.plot([-1,left],[t,t],lw=10,color=[0.2,0.6,0.7])
+            ax2.plot([right,n+1],[t,t],lw=10,color=[0.2,0.6,0.7])
+        ax2.axvline(0,linestyle='dashed',color='k')
+        ax2.axvline(n,linestyle='dashed',color='k')
+        ax2.axvspan(0,n,alpha=0.5,color=[1.0,1.0,0.1])
+        ax2.set_ylim(-0.1,len(self._beams[1].collimator["left"]))
+        ax2.set_ylabel('exposure time',size=14)
+        ax2.set_title('vertical beam collimator apertures',size=14)
+        plt.show()
 
     def print_summary(self):
         if not self.opt:
             raise Exception("No summary available; plan has not been optimized.")
         else:
-            total_dose = np.sum(self.dose_map)
-            avg_dose = np.mean(self.dose_map)
+            total_dose = np.sum(self._maps["optimized"])
+            avg_dose = np.mean(self._maps["optimized"])
             contents = ""
-            for beam in [self.horiz_beam, self.vert_beam]:
+            for beam in self._beams:
                 contents += beam.name+" intensity: "+"%.2f mW/cm^2"%beam.intensity+"\n"+ \
-                            beam.name+" exposure time: "+"%d sec."%len(beam.collimator["left"])+"\n"
+                            beam.name+" exposure time: "+"%d sec."%beam.exposure_time+"\n"
             contents += "Total accumulated dose: "+"%.2f Gy"%total_dose+"\n" \
                         "Average dose per unit area: "+"%.2f Gy/cm^2"%avg_dose+"\n"
             print(contents)

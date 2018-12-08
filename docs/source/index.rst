@@ -1,4 +1,4 @@
-AutoDiff Documentation
+Gradpy Documentation
 ====================================
 
 .. toctree::
