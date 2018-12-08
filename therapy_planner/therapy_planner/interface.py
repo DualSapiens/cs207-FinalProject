@@ -9,9 +9,11 @@ from .costfunctions import *
 
 from enum import Enum
 
+
 class BeamDirection(Enum):
-    Horizontal = 1 # beam propagating along x
-    Vertical = 2 # beam propagating along y
+    Horizontal = 1  # beam propagating along x
+    Vertical = 2  # beam propagating along y
+
 
 class Beam:
     def __init__(self, direction):
@@ -20,6 +22,8 @@ class Beam:
         else:
             self.direction = direction
             self.name = direction.name+" beam"
+        self.collimator = None
+        self.beamlets = None
 
     def solve(self, beamlets, intensity):
         """
@@ -28,15 +32,16 @@ class Beam:
         """
         self.intensity = intensity
         profile = np.array([0] + [(b//self.intensity+np.round(b%self.intensity)/self.intensity).astype(np.int) \
-                  for b in beamlets] + [0],dtype=np.int)
-        keys = ["left","right"]
-        self.collimator = {"left": [],"right": []}
+                                  for b in beamlets] + [0], dtype=np.int)
+        keys = ["left", "right"]
+        self.collimator = {"left": [], "right": []}
         x = 0
-        for a,b in zip(profile[:-1],profile[1:]):
-            self.collimator[keys[(a>b).astype(np.int)]] += [x for _ in range(min([a,b]),max([a,b]))]
+        for a,b in zip(profile[:-1], profile[1:]):
+            self.collimator[keys[(a > b).astype(np.int)]] += [x for _ in range(min([a, b]), max([a, b]))]
             x += 1
         self.beamlets = self.intensity*profile[1:-1]
         self.exposure_time = len(self.collimator["left"])
+
 
 class PlannerInterface:
     def __init__(self, filename):
@@ -113,34 +118,27 @@ class PlannerInterface:
 
         See optimize_demo.ipynb for example
         """
-        m,n = self.shape
+        m, n = self.shape
 
         # Step 1: Optimize intensity profiles (beamlets) for each beam.
         beamlets, dose, found = self.optimize_beamlets(smoothness, tol, maxiter, bounds)
 
         # Handle the case when a minimum to the cost functions cannot be found by BFGS
         if found is False:
-            print("The minimum cannot be found given the cost functions and the number of iterations.")
-            return None
+            raise Exception("The minimum cannot be found given the cost functions and the number of iterations.")
 
         # Step 2: Compute the beam exposure times and sequence of collimator apertures from the optimized beamlets.
         self.solve_beam_collimators(beamlets, intensity)
         
         # Collect values for output.
-        beamlet_values = [b.value for b in beamlets]
-        dose_map = np.array([d.value for d in dose]).reshape(m,n)
+        dose_map = np.array([d.value for d in dose]).reshape(m, n)
 
-        # Check whether the minimum at the cost functions meets the constraints, if bounds are desired.
         if bounds:
-            v = False
+            # Check whether the minimum at the cost functions meets the constraints
             if np.sum(dose_map > self._maps['max']) != 0:
-                print("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
-                v = True
+                raise Exception("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
             if np.sum(dose_map < self._maps['min']) != 0:
-                print("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
-                v = True
-            if v is True:
-                return None
+                raise Exception("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
 
         self._maps["optimized"] = dose_map
         self._maps["difference"] = dose_map - self._maps["target"] # the difference dose map - target map
@@ -251,6 +249,3 @@ class PlannerInterface:
             contents += "Total accumulated dose: "+"%.2f Gy"%total_dose+"\n" \
                         "Average dose per unit area: "+"%.2f Gy/cm^2"%avg_dose+"\n"
             print(contents)
-
-
-
