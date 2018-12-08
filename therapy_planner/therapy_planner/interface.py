@@ -78,7 +78,7 @@ class PlannerInterface:
             n_col = len(map_lines[0].split(','))
             therapy_map = np.zeros((n_row, n_col))
             for i, line in enumerate(map_lines):
-                values = [int(x) for x in line.split(',')]
+                values = [float(x) for x in line.split(',')]
                 for j, value in enumerate(values):
                     therapy_map[i][j] = value
             return therapy_map
