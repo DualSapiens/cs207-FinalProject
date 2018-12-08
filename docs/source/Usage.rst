@@ -1,6 +1,6 @@
 Usage
 ========
-The following demos introduce the basic uses of the `autodiff` and `math` modules of the `gradpy` package, as well as showcase some potential applications. All demos and accompanying code are available in the examples_ of the project GitHub repository.
+The following demonstrations introduce the basic usage of the `autodiff` and `math` modules of the `gradpy` package.  They also showcase some potential applications. All demos and accompanying code are available in the examples_ of the project GitHub repository.
 
 .. toctree::
    :maxdepth: 2
