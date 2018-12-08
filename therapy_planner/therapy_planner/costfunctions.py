@@ -7,6 +7,7 @@ Created on Thu Nov 29 12:16:01 2018
 import sys
 sys.path.append("../../gradpy")
 from gradpy.math import *
+import numpy as np
 
 
 # Define an approximate step function with a tunable sharpness parameter
@@ -21,10 +22,17 @@ def pos_penalty(p, smoothness):
 
 # mean squared error for the target parameter
 def mean_squared_error(y, yo):
-    return sum([(yi-yio)**2 for yi, yio in zip(y, yo)])
-
+    tot = 0
+    for yi, yio in zip(y, yo):
+        if yio is not np.nan:
+            tot += (yi-yio)**2
+    return tot
 
 # Minimax penalty using the approximate step function
-def minmax_penalty(vec, smoothness=1):
-    return sum(approximate_step_function(x, smoothness) for x in vec)
+def minmax_penalty(x, xo, smoothness=1):
+    tot = 0
+    for xi, xio in zip(x, xo):
+        if xio is not np.nan:
+            tot += approximate_step_function(xi-xio, smoothness)
+    return tot
 

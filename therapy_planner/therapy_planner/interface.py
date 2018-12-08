@@ -137,9 +137,11 @@ class PlannerInterface:
 
         if bounds:
             # Check whether the minimum at the cost functions meets the constraints
-            if np.sum(dose_map > self._maps['max']) != 0:
+            out = np.zeros_like(dose_map)
+            if np.any(np.greater(dose_map,self._maps['max'],out=out,where=~np.isnan(self._maps['max']))):
                 raise Exception("The maximum constraints are violated. Suggestion: Adjust the smoothness.")
-            if np.sum(dose_map < self._maps['min']) != 0:
+            out = np.zeros_like(dose_map)
+            if np.any(np.less(dose_map,self._maps['min'],out=out,where=~np.isnan(self._maps['min']))):
                 raise Exception("The minimum constraints are violated. Suggestion: Adjust the smoothness.")
 
         self._maps["optimized"] = dose_map
@@ -162,8 +164,8 @@ class PlannerInterface:
         cost = mean_squared_error(dose,np.ravel(self._maps['target'])) \
              + pos_penalty(beamlets,smoothness)
         if bounds:
-            cost+=minmax_penalty(np.ravel(self._maps['min'])-dose, smoothness)
-            cost+=minmax_penalty(dose-np.ravel(self._maps['max']), smoothness)
+            cost+=minmax_penalty(dose,np.ravel(self._maps['max']),smoothness)
+            cost+=minmax_penalty(-dose,-np.ravel(self._maps['min']),smoothness)
            
         step, Niter, found = BFGS(cost,beamlets,np.ones(len(beamlets)),tol=tol,maxiter=maxiter)
         return beamlets, dose, found
@@ -204,7 +206,7 @@ class PlannerInterface:
         ax.set_xticks([])
         ax.set_yticks([])
         textcolors=["black", "white"]
-        threshold = im.norm(dose_map.max())/2.
+        threshold = im.norm(np.nanmax(dose_map))/2.
         for i in range(m):
             for j in range(n):
                 text = ax.text(j,i,np.round(dose_map[i,j],2),size=fontsize,
