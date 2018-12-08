@@ -55,6 +55,8 @@ class PlannerInterface:
         self._maps = self.read_maps()
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
+        elif self._maps['min'] > self._maps['max']:
+            raise Exception('Minimum values must be lower than maximum values.')
         else:
             self.shape = self._maps['target'].shape
         self.opt = False  # flag if plan has been optimized
