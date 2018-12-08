@@ -41,3 +41,20 @@ class TestInterface:
                             [0.1, 0, 0.5],
                             [0, 0, 0]])
         assert_array_equal(maps["min"], min_map)
+
+    def test_missing_values_map(self):
+        missing_value = np.NaN
+        plan = PlannerInterface(os.path.join(__location__, 'test_missing_values.map'))
+        maps = plan.get_maps()
+        target_map = np.array([[1, missing_value, 3],
+                               [4, 5, 6.3],
+                               [missing_value, 8, 9]])
+        assert_array_equal(maps["target"], target_map)
+        max_map = np.array([[5, 5, missing_value],
+                            [5.1, 5, 5],
+                            [missing_value, 5.2, 5]])
+        assert_array_equal(maps['max'], max_map)
+        min_map = np.array([[0, 0, missing_value],
+                            [0.2, 0.5, missing_value],
+                            [missing_value, 0, 0]])
+        assert_array_equal(maps["min"], min_map)

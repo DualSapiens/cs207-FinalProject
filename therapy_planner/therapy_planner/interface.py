@@ -43,10 +43,13 @@ class Beam:
 
 class PlannerInterface:
     def __init__(self, filename):
+        """
+        :param filename: The filename of the text file where user defined the therapy maps (as in the format of the demo.map)
+        """
         self.datafile = filename
         self.horiz_beam = Beam(BeamDirection.Horizontal)
         self.vert_beam = Beam(BeamDirection.Vertical)
-        self.read_maps()
+        self._maps = self.read_maps()
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
         else:
@@ -55,7 +58,6 @@ class PlannerInterface:
 
     def read_maps(self):
         """
-        :param filename: The filename of the text file where user defined the therapy maps (as in the format of the demo.map)
         :return: maps, where key is "target", "max" or "min" depending on the map type and value is an numpy 2D array
 
         See Interface Demo.ipynb for usage
@@ -75,7 +77,7 @@ class PlannerInterface:
             n_col = len(map_lines[0].split(','))
             therapy_map = np.zeros((n_row, n_col))
             for i, line in enumerate(map_lines):
-                values = [float(x) for x in line.split(',')]
+                values = [float(x) if x.strip() != 'N' else np.NaN for x in line.split(',')]
                 for j, value in enumerate(values):
                     therapy_map[i][j] = value
             return therapy_map
@@ -97,7 +99,7 @@ class PlannerInterface:
             if len(map_lines) > 0:
                 therapy_map = process_map_lines(map_lines)
                 maps[type] = therapy_map
-        self._maps = maps
+        return maps
 
     def get_maps(self):
         return self._maps
