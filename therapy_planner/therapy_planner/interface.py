@@ -107,6 +107,19 @@ class PlannerInterface:
     def get_maps(self):
         return self._maps
 
+    def optimize_with_rotation(self, intensity, smoothness=1., tol=1e-8, maxiter=1000, bounds=False):
+        orig_maps = self._maps
+        angles = [90, 180, 270] # Rotate counter-clockwise
+        num_angles = len(angles)
+        rotated_maps = [{key: np.rot90(map_, k=i+1) for key, map_ in
+                         orig_maps.items()} for i in range(num_angles)]
+
+        # This is not working at all right now.
+        # To implement it, I would want to change the structure of this class a lot
+        # to allow optimization with different rotated maps
+        # But I don't want to make such a big change without letting you know first
+        raise NotImplementedError
+
     def optimize(self, intensity, smoothness=1., tol=1e-8, maxiter=1000, bounds=False):
         """
         :param intensity: the intensity of the incident beams
@@ -145,7 +158,7 @@ class PlannerInterface:
         self._maps["optimized"] = dose_map
         self._maps["difference"] = dose_map - self._maps["target"] # the difference dose map - target map
         self._maps["error"] = np.abs(self._maps["difference"]) # magnitude of difference map
-        self.opt = True # set optimization flag
+        self.opt = True  # set optimization flag
 
     def optimize_beamlets(self, smoothness, tol, maxiter, bounds):
         m,n = self.shape
