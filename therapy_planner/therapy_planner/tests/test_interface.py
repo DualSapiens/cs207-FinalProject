@@ -15,7 +15,7 @@ class TestBeam:
     def test_beam_init(self):
         with pytest.raises(Exception) as e:
             beam = Beam("diagonal")
-            assert e == "Exception: Invalid beam direction."
+        assert e.exconly() == "Exception: Invalid beam direction."
         beam = Beam(BeamDirection.Horizontal)
         assert beam.direction == BeamDirection.Horizontal
         assert beam.name == "Horizontal beam"
@@ -83,27 +83,27 @@ class TestInterface:
     def test_invalid_map(self):
         with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_invalid.map'))
-            assert e == "Exception: Invalid Map Type"
+        assert e.exconly() == "Exception: Invalid Map Type"
 
     def test_shape(self):
         with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_shape.map'))
-            assert e == "Exception: All maps must have the same shape."
+        assert e.exconly() == "Exception: All maps must have the same shape."
 
     def test_min_gt_max(self):
         with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_max.map'))
-            assert e == "Exception: The entries on the minimum map are larger than the ones on the maximum map."
+        assert e.exconly() == "Exception: The entries on the minimum map are larger than the ones on the maximum map."
     
     def test_min_gt_target(self):
         with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_target.map'))
-            assert e == "Exception: The entries on the minimum map are larger than the ones on the target map."
+        assert e.exconly() == "Exception: The entries on the minimum map are larger than the ones on the target map."
     
     def test_target_gt_max(self):
         with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_target_gt_max.map'))
-            assert e == "Exception: The entries on the target map are larger than the ones on the maximum map."
+        assert e.exconly() == "Exception: The entries on the target map are larger than the ones on the maximum map."
     
     def test_optimize(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
@@ -165,30 +165,31 @@ class TestInterface:
         intensity = 0.2
         with pytest.raises(Exception) as e:
             plan.optimize(intensity, allow_rotation=True, maxiter=10)
-            assert e == "Exception: Could not find orientation without violating constraints."
+        assert e.exconly() == "Exception: Could not find orientation without violating constraints."
 
     def test_opt_fail(self):
         intensity = 0.2
         plan = PlannerInterface(os.path.join(__location__, 'test_min_violation.map'))
         with pytest.raises(Exception) as e:
             plan.optimize(intensity, smoothness=0.5, bounds=True)
-            assert e == "Exception: The minimum constraints are violated. Suggestion: Adjust the smoothness."
+        assert e.exconly() == "Exception: The minimum constraints are violated. Suggestion: Adjust the smoothness."
         with pytest.raises(Exception) as e:
             plan.optimize(intensity, bounds=True)
-            assert e == "Exception: Negative beamlet value detected. Suggestion: Adjust the smoothness."
-        
+        assert e.exconly() == "Exception: Negative beamlet value detected. Suggestion: Adjust the smoothness."
+
         plan = PlannerInterface(os.path.join(__location__, 'test_max_violation.map'))
         with pytest.raises(Exception) as e:
             plan.optimize(intensity, smoothness=0.5, bounds=True)
-            assert e == "Exception: The maximum constraints are violated. Suggestion: Adjust the smoothness."
+        assert e.exconly() == "Exception: The maximum constraints are violated. Suggestion: Adjust the smoothness."
 
     def test_plot_map(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
         plan.optimize(intensity, smoothness=0.012)
         fig, ax = plt.subplots(1, 1, figsize=(5, 5))
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan.plot_map("average", ax=ax)
+        assert e.exconly() == 'Exception: Map "average" does not exist.'
         plan.plot_map("optimized", ax=ax)
         plt.close(fig)
         plt.ion()
@@ -206,8 +207,9 @@ class TestInterface:
     def test_print_summary(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan.print_summary()
+        assert e.exconly() == "Exception: No summary available; plan has not been optimized."
         plan.optimize(intensity, smoothness=0.012)
         plan.print_summary()
         plan.optimize(intensity, smoothness=0.02, allow_rotation=True)
