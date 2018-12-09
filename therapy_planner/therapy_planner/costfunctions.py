@@ -32,7 +32,6 @@ def minmax_penalty(x, xo, smoothness=1):
     tot = 0
     for xi, xio in zip(x, xo):
         if ~np.isnan(xio):
-            print(xio)
             tot += approximate_step_function(xi-xio, smoothness)
     return tot
 

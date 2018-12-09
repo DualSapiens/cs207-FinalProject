@@ -13,8 +13,9 @@ __location__ = os.path.realpath(
 
 class TestBeam:
     def test_beam_init(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             beam = Beam("diagonal")
+            assert e == "Exception: Invalid beam direction."
         beam = Beam(BeamDirection.Horizontal)
         assert beam.direction == BeamDirection.Horizontal
         assert beam.name == "Horizontal beam"
@@ -80,25 +81,30 @@ class TestInterface:
         assert_array_equal(maps["min"], min_map)
 
     def test_invalid_map(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_invalid.map'))
+            assert e == "Exception: Invalid Map Type"
 
     def test_shape(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_shape.map'))
+            assert e == "Exception: All maps must have the same shape."
 
     def test_min_gt_max(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_max.map'))
-
+            assert e == "Exception: The entries on the minimum map are larger than the ones on the maximum map."
+    
     def test_min_gt_target(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_target.map'))
-
+            assert e == "Exception: The entries on the minimum map are larger than the ones on the target map."
+    
     def test_target_gt_max(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan = PlannerInterface(os.path.join(__location__, 'test_target_gt_max.map'))
-
+            assert e == "Exception: The entries on the target map are larger than the ones on the maximum map."
+    
     def test_optimize(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
@@ -157,8 +163,24 @@ class TestInterface:
     def test_rotate_exception(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_rotate.map'))
         intensity = 0.2
-        with pytest.raises(Exception):
+        with pytest.raises(Exception) as e:
             plan.optimize(intensity, allow_rotation=True, maxiter=10)
+            assert e == "Exception: Could not find orientation without violating constraints."
+
+    def test_opt_fail(self):
+        intensity = 0.2
+        plan = PlannerInterface(os.path.join(__location__, 'test_min_violation.map'))
+        with pytest.raises(Exception) as e:
+            plan.optimize(intensity, smoothness=0.5, bounds=True)
+            assert e == "Exception: The minimum constraints are violated. Suggestion: Adjust the smoothness."
+        with pytest.raises(Exception) as e:
+            plan.optimize(intensity, bounds=True)
+            assert e == "Exception: Negative beamlet value detected. Suggestion: Adjust the smoothness."
+        
+        plan = PlannerInterface(os.path.join(__location__, 'test_max_violation.map'))
+        with pytest.raises(Exception) as e:
+            plan.optimize(intensity, smoothness=0.5, bounds=True)
+            assert e == "Exception: The maximum constraints are violated. Suggestion: Adjust the smoothness."
 
     def test_plot_map(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
