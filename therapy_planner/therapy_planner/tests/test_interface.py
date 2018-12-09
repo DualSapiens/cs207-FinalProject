@@ -100,7 +100,7 @@ class TestInterface:
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
         plan.optimize(intensity, smoothness=0.02, allow_rotation=True)
-        assert plan.rotate_angle == 90
+        assert plan.rotation_angle == 90
         maps = plan.get_maps()
         assert np.allclose(maps["optimized"], [[2.8, 0.77295753],
                                                [3.83774517, 1.86478764]])

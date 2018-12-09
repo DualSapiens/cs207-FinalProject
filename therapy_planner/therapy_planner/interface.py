@@ -68,6 +68,10 @@ class PlannerInterface:
         self.shape = self._maps['target'].shape
         self.opt = False  # flag if plan has been optimized
 
+        # Initialize rotation info
+        self.rotate = None
+        self.rotation_angle = None # counter-clockwise in degrees
+
     def read_maps(self):
         """
         :return: maps, where key is "target", "max" or "min" depending on the map type and value is an numpy 2D array
@@ -138,19 +142,25 @@ class PlannerInterface:
             best_index = None
             best_cost = None
             current_maps = self._maps
-            for i in range(3):
-                solved_maps, cost_value, beams = self.optimize_map(current_maps,
+            for i in range(4):
+                print("Optimize for rotation: {} degrees".format(90*i))
+                try:
+                    solved_maps, cost_value, beams = self.optimize_map(current_maps,
                                                                    intensity,
                                                                    smoothness, tol,
                                                                    maxiter, bounds)
-                if best_cost is None or cost_value < best_cost:
-                    best_cost = cost_value
-                    best_index = i
-                    self._maps = solved_maps
-                    self._beams = beams
-
+                    if best_cost is None or cost_value < best_cost:
+                        best_cost = cost_value
+                        best_index = i
+                        self._maps = solved_maps
+                        self._beams = beams
+                except Exception as e:
+                    print(e)
                 current_maps = {k: np.rot90(v) for k, v in current_maps.items()}
-            self.rotate_angle = 90 * best_index
+            if best_index is None:
+                raise Exception("Could not find orientation without violating constraints.")
+            self.rotation_angle = 90 * best_index
+            print("Found best rotation (counter-clockwise): {} degrees".format(self.rotation_angle))
         self.rotate = allow_rotation
         self.opt = True  # set optimization flag
 
@@ -285,6 +295,9 @@ class PlannerInterface:
         if not self.opt:
             raise Exception("No summary available; plan has not been optimized.")
         else:
+            if self.rotate is True:
+                print("Maps are rotated for optimality.")
+                print("Optimal rotation (counter-clockwise): {} degrees".format(self.rotation_angle))
             total_dose = np.sum(self._maps["optimized"])
             avg_dose = np.mean(self._maps["optimized"])
             contents = ""
