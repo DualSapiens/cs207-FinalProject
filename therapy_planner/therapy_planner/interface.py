@@ -239,8 +239,9 @@ class PlannerInterface:
         ax1.axhline(0,linestyle='dashed',color='k')
         ax1.axhline(m,linestyle='dashed',color='k')
         ax1.axhspan(0,m,alpha=0.5,color=[1.0,1.0,0.1])
-        ax1.set_xlim(-0.1,len(self._beams[0].collimator["left"]))
-        ax1.set_xlabel('exposure time',size=14)
+        ax1.set_xlim(-0.5,len(self._beams[0].collimator["left"]))
+        ax1.tick_params(labelsize=14)
+        ax1.set_xlabel('exposure time (s)',size=14)
         ax1.set_title('horizontal beam collimator apertures',size=14)
         for t,(left, right) in enumerate(zip(self._beams[1].collimator["left"],self._beams[1].collimator["right"])):
             ax2.plot([-1,left],[t,t],lw=10,color=[0.2,0.6,0.7])
@@ -248,8 +249,9 @@ class PlannerInterface:
         ax2.axvline(0,linestyle='dashed',color='k')
         ax2.axvline(n,linestyle='dashed',color='k')
         ax2.axvspan(0,n,alpha=0.5,color=[1.0,1.0,0.1])
-        ax2.set_ylim(-0.1,len(self._beams[1].collimator["left"]))
-        ax2.set_ylabel('exposure time',size=14)
+        ax2.set_ylim(-0.5,len(self._beams[1].collimator["left"]))
+        ax2.tick_params(labelsize=14)
+        ax2.set_ylabel('exposure time (s)',size=14)
         ax2.set_title('vertical beam collimator apertures',size=14)
         plt.show()
 
