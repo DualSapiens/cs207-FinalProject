@@ -77,3 +77,23 @@ class TestInterface:
                             [0.2, 0.5, missing_value],
                             [missing_value, 0, 0]])
         assert_array_equal(maps["min"], min_map)
+
+    def test_optimize(self):
+        plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
+        intensity = 0.2
+        plan.optimize(intensity, smoothness=0.01)
+        maps = plan.get_maps()
+        assert np.allclose(maps["optimized"], [[3.8, 2.8512664],
+                                               [1.69183011, 0.93239382]])
+        horiz_beam = plan._beams[0]
+        vert_beam = plan._beams[1]
+        assert np.allclose(horiz_beam.beamlets, [2.2, 0.2])
+        assert np.allclose(vert_beam.beamlets, [1.6, 0.8])
+        assert np.allclose(horiz_beam.collimator["left"], [0]*11)
+        assert np.allclose(horiz_beam.collimator["right"], [1]*10 + [2])
+        assert np.allclose(vert_beam.collimator["left"], [0]*8)
+        assert np.allclose(vert_beam.collimator["right"], [1]*4 + [2]*4)
+        assert horiz_beam.exposure_time == 11
+        assert vert_beam.exposure_time == 8
+
+
