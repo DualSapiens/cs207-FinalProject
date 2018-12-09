@@ -163,12 +163,12 @@ class PlannerInterface:
         self.rotate = allow_rotation
         self.opt = True  # set optimization flag
 
-    def optimize_map(self, maps, intensity, smoothness=1., tol=1e-8, maxiter=1000, bounds=False):
+    def optimize_map(self, maps, intensity, smoothness, tol, maxiter, bounds):
         m, n = maps['target'].shape
 
         # Step 1: Optimize intensity profiles (beamlets) for each beam.
         beamlets, dose, found, cost_value = self.optimize_beamlets(maps, smoothness, tol, maxiter, bounds)
-
+        print([b.value for b in beamlets],cost_value)
         # Handle the case when a minimum to the cost functions cannot be found by BFGS
         if found is False:
             raise Exception("The minimum cannot be found given the cost functions and the number of iterations.")

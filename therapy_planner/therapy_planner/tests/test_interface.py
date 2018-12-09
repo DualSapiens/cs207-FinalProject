@@ -117,24 +117,24 @@ class TestInterface:
         assert horiz_beam.exposure_time == 11
         assert vert_beam.exposure_time == 8
 
-    def test_rotate(self):
-        plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
+    def test_optimize_rotate(self):
+        plan = PlannerInterface(os.path.join(__location__, 'test_rotate.map'))
         intensity = 0.2
-        plan.optimize(intensity, smoothness=0.02, allow_rotation=True)
-        assert plan.rotation_angle == 90
+        plan.optimize(intensity, smoothness=0.012, allow_rotation=True)
+        assert plan.rotation_angle == 270
         maps = plan.get_maps()
-        assert np.allclose(maps["optimized"], [[2.8, 0.77295753],
-                                               [3.83774517, 1.86478764]])
+        assert np.allclose(maps["optimized"], [[2.8, 0.75943629],
+                                               [3.8512664, 1.86478764]])
         horiz_beam = plan._beams[0]
         vert_beam = plan._beams[1]
-        assert np.allclose(horiz_beam.beamlets, [0.4, 1.6])
-        assert np.allclose(vert_beam.beamlets, [2.4, 0.4])
-        assert np.allclose(horiz_beam.collimator["left"], [0]*2 + [1]*6)
-        assert np.allclose(horiz_beam.collimator["right"], [2]*8)
-        assert np.allclose(vert_beam.collimator["left"], [0]*12)
-        assert np.allclose(vert_beam.collimator["right"], [1]*10 + [2]*2)
-        assert horiz_beam.exposure_time == 8
-        assert vert_beam.exposure_time == 12
+        assert np.allclose(horiz_beam.beamlets, [0.6, 1.8])
+        assert np.allclose(vert_beam.beamlets, [2.2, 0.2])
+        assert np.allclose(horiz_beam.collimator["left"], [0]*3 + [1]*6)
+        assert np.allclose(horiz_beam.collimator["right"], [2]*9)
+        assert np.allclose(vert_beam.collimator["left"], [0]*11)
+        assert np.allclose(vert_beam.collimator["right"], [1]*10 + [2])
+        assert horiz_beam.exposure_time == 9
+        assert vert_beam.exposure_time == 11
 
     def test_plot_map(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
