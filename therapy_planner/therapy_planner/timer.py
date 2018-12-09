@@ -6,9 +6,9 @@ Created on Thu Dec  6 15:27:42 2018
 """
 import time
 def timer(func):
-    def wrapper():
+    def wrapper(*args, **kw):
         ts = time.time()
-        func()
+        func(*args, **kw)
         te = time.time()
-        print((ts-te))
+        print("Time Elapsed: %.4f sec." % (te-ts))
     return wrapper

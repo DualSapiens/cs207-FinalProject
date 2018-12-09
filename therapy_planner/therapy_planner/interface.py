@@ -5,6 +5,7 @@ from gradpy.autodiff import Var
 from gradpy.math import *
 from .bfgs import BFGS
 from .costfunctions import *
+from .timer import timer
 
 from enum import Enum
 
@@ -119,6 +120,7 @@ class PlannerInterface:
     def get_maps(self):
         return self._maps
 
+    @timer
     def optimize(self, intensity, smoothness=1., tol=1e-8, maxiter=1000, bounds=False, allow_rotation=False):
         """
         :param intensity: the intensity of the incident beams
