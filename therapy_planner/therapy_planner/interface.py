@@ -140,16 +140,16 @@ class PlannerInterface:
             current_maps = self._maps
             for i in range(3):
                 solved_maps, cost_value, beams = self.optimize_map(current_maps,
-                                                            intensity,
-                                                            smoothness, tol,
-                                                            maxiter, bounds)
+                                                                   intensity,
+                                                                   smoothness, tol,
+                                                                   maxiter, bounds)
                 if best_cost is None or cost_value < best_cost:
                     best_cost = cost_value
                     best_index = i
                     self._maps = solved_maps
                     self._beams = beams
 
-                current_maps = np.rot90(current_maps)
+                current_maps = {k: np.rot90(v) for k, v in current_maps.items()}
             self.rotate_angle = 90 * best_index
         self.rotate = allow_rotation
         self.opt = True  # set optimization flag
