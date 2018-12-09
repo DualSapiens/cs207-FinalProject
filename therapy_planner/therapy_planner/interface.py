@@ -65,7 +65,6 @@ class PlannerInterface:
         elif np.any(np.greater(self._maps['target'], self._maps['max'], out=out3, where=((~np.isnan(self._maps['max']))&(~np.isnan(self._maps['target']))))):
             raise Exception("The entries on the target map are larger than the ones on the maximum map.")
 
-        self.shape = self._maps['target'].shape
         self.opt = False  # flag if plan has been optimized
 
         # Initialize rotation info
@@ -268,7 +267,7 @@ class PlannerInterface:
 
     def plot_collimators(self):
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-        m, n = self.shape
+        m, n = self._maps["target"].shape
         for t, (left, right) in enumerate(zip(self._beams[0].collimator["left"], self._beams[0].collimator["right"])):
             ax1.plot([t, t], [m+1, m-left], lw=10, color=[0.2, 0.6, 0.7])
             ax1.plot([t, t], [m-right, -1], lw=10, color=[0.2, 0.6, 0.7])
