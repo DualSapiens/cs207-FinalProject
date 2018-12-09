@@ -1,0 +1,5 @@
+{
+  "therapy_planner/tests/test_interface.py::TestInterface::()::test_missing_values_map": true,
+  "therapy_planner/tests/test_interface.py::TestInterface::()::test_read_float_maps": true,
+  "therapy_planner/tests/test_interface.py::TestInterface::()::test_read_maps": true
+}
