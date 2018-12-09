@@ -1,5 +1,4 @@
-import sys
-sys.path.append("../../../gradpy")
+
 
 from ..bfgs import BFGS
 from gradpy.autodiff import Var
