@@ -1,5 +1,6 @@
 from ..interface import BeamDirection, Beam, PlannerInterface
 import numpy as np
+import matplotlib.pyplot as plt
 import pytest
 from numpy.testing import assert_array_equal
 import os
@@ -78,6 +79,14 @@ class TestInterface:
                             [missing_value, 0, 0]])
         assert_array_equal(maps["min"], min_map)
 
+    def test_invalid_map(self):
+        with pytest.raises(Exception):
+            plan = PlannerInterface(os.path.join(__location__, 'test_invalid.map'))
+
+    def test_shape(self):
+        with pytest.raises(Exception):
+            plan = PlannerInterface(os.path.join(__location__, 'test_shape.map'))
+
     def test_min_gt_max(self):
         with pytest.raises(Exception):
             plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_max.map'))
@@ -126,5 +135,24 @@ class TestInterface:
         assert np.allclose(vert_beam.collimator["right"], [1]*10 + [2]*2)
         assert horiz_beam.exposure_time == 8
         assert vert_beam.exposure_time == 12
+
+    def test_plot_map(self):
+        plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
+        intensity = 0.2
+        plan.optimize(intensity, smoothness=0.012)
+        fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+        with pytest.raises(Exception):
+            plan.plot_map("average", ax=ax)
+        plan.plot_map("optimized", ax=ax)
+        plt.close(fig)
+
+    def test_plot_collimators(self):
+        plt.ion()
+        plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
+        intensity = 0.2
+        plan.optimize(intensity, smoothness=0.012)
+        plan.plot_collimators()
+        plt.close("all")
+
 
 
