@@ -78,6 +78,18 @@ class TestInterface:
                             [missing_value, 0, 0]])
         assert_array_equal(maps["min"], min_map)
 
+    def test_min_gt_max(self):
+        with pytest.raises(Exception):
+            plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_max.map'))
+
+    def test_min_gt_target(self):
+        with pytest.raises(Exception):
+            plan = PlannerInterface(os.path.join(__location__, 'test_min_gt_target.map'))
+
+    def test_target_gt_max(self):
+        with pytest.raises(Exception):
+            plan = PlannerInterface(os.path.join(__location__, 'test_target_gt_max.map'))
+
     def test_optimize(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
