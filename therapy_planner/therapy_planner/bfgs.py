@@ -1,6 +1,6 @@
 import numpy as np
 
-def BFGS(fun,var,xi,tol=1.0e-8,maxiter=100000):
+def BFGS(fun, var, xi, tol=1.0e-8, maxiter=100000):
     """ Broyden-Fletcher-Goldfarb-Shanno algorithm for unconstrained nonlinear optimization,
         using autodiff.
 
@@ -29,7 +29,7 @@ def BFGS(fun,var,xi,tol=1.0e-8,maxiter=100000):
         except TypeError:  # univariate function
             var = [var]
             xi = [xi]
-        for v,val in zip(var,xi):
+        for v, val in zip(var, xi):
             v.set_value(val)
         s = 1.0e20
         Hinv = np.identity(len(var))  # approx inverse Hessian
@@ -46,11 +46,11 @@ def BFGS(fun,var,xi,tol=1.0e-8,maxiter=100000):
                 g = fun.grad(var)
                 s = -Hinv.dot(g.T)
                 y = -g
-                for v,step in zip(var,s):
+                for v, step in zip(var, s):
                     v.set_value(v.value+step)
                 y += fun.grad(var)
-                rho = 1.0/np.dot(y,s)
-                Hinv = np.dot((np.identity(len(var))-rho*np.outer(s,y)),\
-                    np.dot(Hinv,(np.identity(len(var))-rho*np.outer(y,s)))) + rho*np.outer(s,s)
+                rho = 1.0/np.dot(y, s)
+                Hinv = np.dot((np.identity(len(var))-rho*np.outer(s, y)),\
+                    np.dot(Hinv,(np.identity(len(var))-rho*np.outer(y, s)))) + rho*np.outer(s, s)
                 Niter += 1
         return np.linalg.norm(s), Niter, found
