@@ -145,6 +145,9 @@ class TestInterface:
             plan.plot_map("average", ax=ax)
         plan.plot_map("optimized", ax=ax)
         plt.close(fig)
+        plt.ion()
+        plan.plot_map("optimized")
+        plt.close("all")
 
     def test_plot_collimators(self):
         plt.ion()
@@ -153,6 +156,16 @@ class TestInterface:
         plan.optimize(intensity, smoothness=0.012)
         plan.plot_collimators()
         plt.close("all")
+
+    def test_print_summary(self):
+        plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
+        intensity = 0.2
+        with pytest.raises(Exception):
+            plan.print_summary()
+        plan.optimize(intensity, smoothness=0.012)
+        plan.print_summary()
+        plan.optimize(intensity, smoothness=0.02, allow_rotation=True)
+        plan.print_summary()
 
 
 
