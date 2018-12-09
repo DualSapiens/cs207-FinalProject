@@ -1,5 +1,4 @@
-import sys
-sys.path.append("../../gradpy")
+
 import numpy as np
 import matplotlib.pyplot as plt
 from gradpy.autodiff import Var
@@ -53,8 +52,17 @@ class PlannerInterface:
         vert_beam = Beam(BeamDirection.Vertical)
         self._beams = [horiz_beam, vert_beam]
         self._maps = self.read_maps()
+        out1 = np.zeros_like(self._maps['min'])
+        out2 = np.zeros_like(self._maps['min'])
+        out3 = np.zeros_like(self._maps['min'])
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
+        elif np.any(np.greater(self._maps['min'],self._maps['max'],out=out1,where=~(np.isnan(self._maps['max'])+ np.isnan(self._maps['min'])))):
+            raise Exception("The entries on the minimum map are larger than the ones on the maximum map.")
+        elif np.any(np.greater(self._maps['min'],self._maps['target'],out=out2,where=~(np.isnan(self._maps['target'])+np.isnan(self._maps['min'])))):
+            raise Exception("The entries on the minimum map are larger than the ones on the target map.")
+        elif np.any(np.greater(self._maps['target'],self._maps['max'],out=out3,where=~(np.isnan(self._maps['target'])+np.isnan(self._maps['max'])))):
+            raise Exception("The entries on the target map are larger than the ones on the maximum map.")
         else:
             self.shape = self._maps['target'].shape
         self.opt = False  # flag if plan has been optimized
@@ -128,8 +136,8 @@ class PlannerInterface:
         :param maxiter: maximum number of iterations in optimization
 
         :computes dose_map: the accumulated dose map at the optimized collimator sequences, of the same shape as the input maps
-        :computes horiz_beam: the horizontal beam object, with beam intensity, collimator, and beamlets attributes 
-        :computes vert_beam: the vertical beam object, with beam intensity, collimator, and beamlets attributes 
+        :computes horiz_beam: the horizontal beam object, with beam intensity, collimator, and beamlets attributes
+        :computes vert_beam: the vertical beam object, with beam intensity, collimator, and beamlets attributes
 
         See optimize_demo.ipynb for example
         """
@@ -144,7 +152,7 @@ class PlannerInterface:
 
         # Step 2: Compute the beam exposure times and sequence of collimator apertures from the optimized beamlets.
         self.solve_beam_collimators(beamlets, intensity)
-        
+
         # Collect values for output.
         dose_map = np.array([d.value for d in dose]).reshape(m, n)
 
@@ -179,7 +187,7 @@ class PlannerInterface:
         if bounds:
             cost+=minmax_penalty(dose,np.ravel(self._maps['max']),smoothness)
             cost+=minmax_penalty(-dose,-np.ravel(self._maps['min']),smoothness)
-           
+
         step, Niter, found = BFGS(cost,beamlets,np.ones(len(beamlets)),tol=tol,maxiter=maxiter)
         return beamlets, dose, found
 

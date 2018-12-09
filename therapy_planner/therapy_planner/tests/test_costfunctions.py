@@ -5,8 +5,7 @@ Created on Wed Dec  5 14:18:10 2018
 @author: gk
 """
 
-import sys
-sys.path.append("../../../gradpy")
+
 
 from ..costfunctions import *
 from gradpy.math import *

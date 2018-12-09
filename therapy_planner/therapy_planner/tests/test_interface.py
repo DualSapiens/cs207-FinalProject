@@ -36,9 +36,9 @@ class TestInterface:
                                [4, 5, 6],
                                [7, 8, 9]])
         assert_array_equal(maps["target"], target_map)
-        max_map = np.array([[5, 5, 5],
-                            [5, 5, 5],
-                            [5, 5, 5]])
+        max_map = np.array([[10, 10, 10],
+                            [10, 10, 10],
+                            [10, 10, 10]])
         assert_array_equal(maps['max'], max_map)
         min_map = np.array([[0, 0, 0],
                             [0, 0, 0],
@@ -52,9 +52,9 @@ class TestInterface:
                                [4, 5, 6],
                                [7, 8, 9.0]])
         assert_array_equal(maps["target"], target_map)
-        max_map = np.array([[5, 5, 5],
-                            [5, 5.5, 5],
-                            [5.2, 5, 5]])
+        max_map = np.array([[50, 50, 50],
+                            [50, 55.5, 50],
+                            [52.2, 50, 50]])
         assert_array_equal(maps['max'], max_map)
         min_map = np.array([[0, 0, 0],
                             [0.1, 0, 0.5],
@@ -69,9 +69,9 @@ class TestInterface:
                                [4, 5, 6.3],
                                [missing_value, 8, 9]])
         assert_array_equal(maps["target"], target_map)
-        max_map = np.array([[5, 5, missing_value],
-                            [5.1, 5, 5],
-                            [missing_value, 5.2, 5]])
+        max_map = np.array([[50, 50, missing_value],
+                            [50.1, 50, 50],
+                            [missing_value, 50.2, 50]])
         assert_array_equal(maps['max'], max_map)
         min_map = np.array([[0, 0, missing_value],
                             [0.2, 0.5, missing_value],

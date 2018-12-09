@@ -4,8 +4,7 @@ Created on Thu Nov 29 12:16:01 2018
 
 @author: gk
 """
-import sys
-sys.path.append("../../gradpy")
+
 from gradpy.math import *
 import numpy as np
 

@@ -1,0 +1,4 @@
+numpy==1.15.2
+matplotlib==3.0.1
+gradpy==1.0.0
+

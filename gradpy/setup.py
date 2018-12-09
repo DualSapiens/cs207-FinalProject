@@ -8,7 +8,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="gradpy",
-    version="0.0.1",
+    version="1.0.0",
     author="DualSapiens",
     author_email="",
     description="A package for automatic differentiation",
