@@ -154,6 +154,12 @@ class TestInterface:
         assert horiz_beam.exposure_time == 11
         assert vert_beam.exposure_time == 9
 
+    def test_rotate_exception(self):
+        plan = PlannerInterface(os.path.join(__location__, 'test_rotate.map'))
+        intensity = 0.2
+        with pytest.raises(Exception):
+            plan.optimize(intensity, allow_rotation=True, maxiter=10)
+
     def test_plot_map(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
