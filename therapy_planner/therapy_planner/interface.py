@@ -53,10 +53,17 @@ class PlannerInterface:
         vert_beam = Beam(BeamDirection.Vertical)
         self._beams = [horiz_beam, vert_beam]
         self._maps = self.read_maps()
+        out1 = np.zeros_like(self._maps['min'])
+        out2 = np.zeros_like(self._maps['min'])
+        out3 = np.zeros_like(self._maps['min'])
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
-        elif self._maps['min'] > self._maps['max']:
-            raise Exception('Minimum values must be lower than maximum values.')
+        elif np.any(np.greater(self._maps['min'],self._maps['max'],out=out1,where=~np.isnan(self._maps['max']) and ~np.isnan(self._maps['min']))):
+            raise Exception("The entries on the minimum map are larger than the ones on the maximum map.")
+        elif np.any(np.greater(self._maps['min'],self._maps['target'],out=out2,where=~np.isnan(self._maps['target']) and ~np.isnan(self._maps['min']))):
+            raise Exception("The entries on the minimum map are larger than the ones on the target map.")
+        elif np.any(np.greater(self._maps['target'],self._maps['max'],out=out3,where=~np.isnan(self._maps['target']) and ~np.isnan(self._maps['max']))):
+            raise Exception("The entries on the target map are larger than the ones on the maximum map.")
         else:
             self.shape = self._maps['target'].shape
         self.opt = False  # flag if plan has been optimized
