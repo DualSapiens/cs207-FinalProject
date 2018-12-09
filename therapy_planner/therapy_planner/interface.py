@@ -58,11 +58,11 @@ class PlannerInterface:
 
         if not (self._maps['target'].shape == self._maps['min'].shape and self._maps['target'].shape == self._maps['max'].shape):
             raise Exception('All maps must have the same shape.')
-        elif np.any(np.greater(self._maps['min'],self._maps['max'],out=out1,where=~(np.isnan(self._maps['max'])+ np.isnan(self._maps['min'])))):
+        elif np.any(np.greater(self._maps['min'], self._maps['max'], out=out1, where=((~np.isnan(self._maps['max']))&(~np.isnan(self._maps['min']))))):
             raise Exception("The entries on the minimum map are larger than the ones on the maximum map.")
-        elif np.any(np.greater(self._maps['min'],self._maps['target'],out=out2,where=~(np.isnan(self._maps['target'])+np.isnan(self._maps['min'])))):
+        elif np.any(np.greater(self._maps['min'], self._maps['target'], out=out2, where=((~np.isnan(self._maps['target']))&(~np.isnan(self._maps['min']))))):
             raise Exception("The entries on the minimum map are larger than the ones on the target map.")
-        elif np.any(np.greater(self._maps['target'],self._maps['max'],out=out3,where=~(np.isnan(self._maps['target'])+np.isnan(self._maps['max'])))):
+        elif np.any(np.greater(self._maps['target'], self._maps['max'], out=out3, where=((~np.isnan(self._maps['max']))&(~np.isnan(self._maps['target']))))):
             raise Exception("The entries on the target map are larger than the ones on the maximum map.")
 
         self.shape = self._maps['target'].shape
@@ -241,10 +241,10 @@ class PlannerInterface:
             dose_map = self._maps[name]
         except KeyError:
             raise Exception('Map "'+name+'" does not exist.')
-        m,n = dose_map.shape
+        m, n = dose_map.shape
         if ax is None:
             show = True
-            fig, ax = plt.subplots(1,1,figsize=(n+m/2,m))
+            fig, ax = plt.subplots(1, 1, figsize=(n+m/2, m))
         else:
             show = False
         im = ax.imshow(dose_map, cmap=cmap)
@@ -258,37 +258,37 @@ class PlannerInterface:
         threshold = im.norm(np.nanmax(dose_map))/2.
         for i in range(m):
             for j in range(n):
-                text = ax.text(j,i,np.round(dose_map[i,j],2),size=fontsize,
-                               ha="center", va="center",color=textcolors[(im.norm(dose_map[i,j])>threshold).astype(np.int)])
-        ax.text(0.5,-0.1,"{} map".format(name),
+                text = ax.text(j, i, np.round(dose_map[i,j],2), size=fontsize,
+                               ha="center", va="center", color=textcolors[(im.norm(dose_map[i,j])>threshold).astype(np.int)])
+        ax.text(0.5, -0.1, "{} map".format(name),
                 horizontalalignment='center', verticalalignment='center',
                 transform=ax.transAxes, size=14)
         if show:
             plt.show()
 
     def plot_collimators(self):
-        fig, (ax1, ax2) = plt.subplots(1,2,figsize=(12,6))
-        m,n = self.shape
-        for t,(left, right) in enumerate(zip(self._beams[0].collimator["left"],self._beams[0].collimator["right"])):
-            ax1.plot([t,t],[m+1,m-left],lw=10,color=[0.2,0.6,0.7])
-            ax1.plot([t,t],[m-right,-1],lw=10,color=[0.2,0.6,0.7])
-        ax1.axhline(0,linestyle='dashed',color='k')
-        ax1.axhline(m,linestyle='dashed',color='k')
-        ax1.axhspan(0,m,alpha=0.5,color=[1.0,1.0,0.1])
-        ax1.set_xlim(-0.5,len(self._beams[0].collimator["left"]))
+        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+        m, n = self.shape
+        for t, (left, right) in enumerate(zip(self._beams[0].collimator["left"], self._beams[0].collimator["right"])):
+            ax1.plot([t, t], [m+1, m-left], lw=10, color=[0.2, 0.6, 0.7])
+            ax1.plot([t, t], [m-right, -1], lw=10, color=[0.2, 0.6, 0.7])
+        ax1.axhline(0, linestyle='dashed', color='k')
+        ax1.axhline(m, linestyle='dashed', color='k')
+        ax1.axhspan(0, m, alpha=0.5, color=[1.0,1.0,0.1])
+        ax1.set_xlim(-0.5, len(self._beams[0].collimator["left"]))
         ax1.tick_params(labelsize=14)
-        ax1.set_xlabel('exposure time (s)',size=14)
-        ax1.set_title('horizontal beam collimator apertures',size=14)
-        for t,(left, right) in enumerate(zip(self._beams[1].collimator["left"],self._beams[1].collimator["right"])):
-            ax2.plot([-1,left],[t,t],lw=10,color=[0.2,0.6,0.7])
-            ax2.plot([right,n+1],[t,t],lw=10,color=[0.2,0.6,0.7])
-        ax2.axvline(0,linestyle='dashed',color='k')
-        ax2.axvline(n,linestyle='dashed',color='k')
-        ax2.axvspan(0,n,alpha=0.5,color=[1.0,1.0,0.1])
-        ax2.set_ylim(-0.5,len(self._beams[1].collimator["left"]))
+        ax1.set_xlabel('exposure time (s)', size=14)
+        ax1.set_title('horizontal beam collimator apertures', size=14)
+        for t, (left, right) in enumerate(zip(self._beams[1].collimator["left"], self._beams[1].collimator["right"])):
+            ax2.plot([-1, left], [t, t], lw=10, color=[0.2, 0.6, 0.7])
+            ax2.plot([right, n+1], [t, t], lw=10, color=[0.2, 0.6, 0.7])
+        ax2.axvline(0, linestyle='dashed', color='k')
+        ax2.axvline(n, linestyle='dashed', color='k')
+        ax2.axvspan(0, n, alpha=0.5, color=[1.0, 1.0, 0.1])
+        ax2.set_ylim(-0.5, len(self._beams[1].collimator["left"]))
         ax2.tick_params(labelsize=14)
-        ax2.set_ylabel('exposure time (s)',size=14)
-        ax2.set_title('vertical beam collimator apertures',size=14)
+        ax2.set_ylabel('exposure time (s)', size=14)
+        ax2.set_title('vertical beam collimator apertures', size=14)
         plt.show()
 
     def print_summary(self):
