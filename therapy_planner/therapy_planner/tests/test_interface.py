@@ -102,39 +102,57 @@ class TestInterface:
     def test_optimize(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
-        plan.optimize(intensity, smoothness=0.012)
+        plan.optimize(intensity, smoothness=0.5)
         maps = plan.get_maps()
-        assert np.allclose(maps["optimized"], [[3.8, 2.8512664],
-                                               [1.69183011, 0.93239382]])
+        assert np.allclose(maps["optimized"], [[3.8, 2.83774517],
+                                               [1.70535135, 0.93239382]])
         horiz_beam = plan._beams[0]
         vert_beam = plan._beams[1]
-        assert np.allclose(horiz_beam.beamlets, [2.2, 0.2])
-        assert np.allclose(vert_beam.beamlets, [1.6, 0.8])
-        assert np.allclose(horiz_beam.collimator["left"], [0]*11)
-        assert np.allclose(horiz_beam.collimator["right"], [1]*10 + [2])
-        assert np.allclose(vert_beam.collimator["left"], [0]*8)
-        assert np.allclose(vert_beam.collimator["right"], [1]*4 + [2]*4)
-        assert horiz_beam.exposure_time == 11
-        assert vert_beam.exposure_time == 8
+        assert np.allclose(horiz_beam.beamlets, [2.4, 0.4])
+        assert np.allclose(vert_beam.beamlets, [1.4, 0.6])
+        assert np.allclose(horiz_beam.collimator["left"], [0]*12)
+        assert np.allclose(horiz_beam.collimator["right"], [1]*10 + [2]*2)
+        assert np.allclose(vert_beam.collimator["left"], [0]*7)
+        assert np.allclose(vert_beam.collimator["right"], [1]*4 + [2]*3)
+        assert horiz_beam.exposure_time == 12
+        assert vert_beam.exposure_time == 7
 
     def test_optimize_rotate(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_rotate.map'))
         intensity = 0.2
-        plan.optimize(intensity, smoothness=0.012, allow_rotation=True)
-        assert plan.rotation_angle == 270
+        plan.optimize(intensity, smoothness=0.5, allow_rotation=True)
+        assert plan.rotation_angle == 180
         maps = plan.get_maps()
-        assert np.allclose(maps["optimized"], [[2.8, 0.75943629],
-                                               [3.8512664, 1.86478764]])
+        assert np.allclose(maps["optimized"], [[3.8, 2.83774517],
+                                               [1.70535135, 0.93239382]])
         horiz_beam = plan._beams[0]
         vert_beam = plan._beams[1]
-        assert np.allclose(horiz_beam.beamlets, [0.6, 1.8])
-        assert np.allclose(vert_beam.beamlets, [2.2, 0.2])
-        assert np.allclose(horiz_beam.collimator["left"], [0]*3 + [1]*6)
-        assert np.allclose(horiz_beam.collimator["right"], [2]*9)
-        assert np.allclose(vert_beam.collimator["left"], [0]*11)
-        assert np.allclose(vert_beam.collimator["right"], [1]*10 + [2])
-        assert horiz_beam.exposure_time == 9
-        assert vert_beam.exposure_time == 11
+        assert np.allclose(horiz_beam.beamlets, [2.4, 0.4])
+        assert np.allclose(vert_beam.beamlets, [1.4, 0.6])
+        assert np.allclose(horiz_beam.collimator["left"], [0]*12)
+        assert np.allclose(horiz_beam.collimator["right"], [1]*10 + [2]*2)
+        assert np.allclose(vert_beam.collimator["left"], [0]*7)
+        assert np.allclose(vert_beam.collimator["right"], [1]*4 + [2]*3)
+        assert horiz_beam.exposure_time == 12
+        assert vert_beam.exposure_time == 7
+
+    def test_optimize_bounds(self):
+        plan = PlannerInterface(os.path.join(__location__, 'test_bounds.map'))
+        intensity = 0.2
+        plan.optimize(intensity, bounds=True)
+        maps = plan.get_maps()
+        assert np.allclose(maps["optimized"], [[4., 2.8512664],
+                                               [1.87830888, 0.93239382]])
+        horiz_beam = plan._beams[0]
+        vert_beam = plan._beams[1]
+        assert np.allclose(horiz_beam.beamlets, [2.2, 0.2])
+        assert np.allclose(vert_beam.beamlets, [1.8, 0.8])
+        assert np.allclose(horiz_beam.collimator["left"], [0]*11)
+        assert np.allclose(horiz_beam.collimator["right"], [1]*10 + [2])
+        assert np.allclose(vert_beam.collimator["left"], [0]*9)
+        assert np.allclose(vert_beam.collimator["right"], [1]*5 + [2]*4)
+        assert horiz_beam.exposure_time == 11
+        assert vert_beam.exposure_time == 9
 
     def test_plot_map(self):
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))

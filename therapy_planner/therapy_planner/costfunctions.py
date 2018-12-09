@@ -23,7 +23,7 @@ def pos_penalty(p, smoothness):
 def mean_squared_error(y, yo):
     tot = 0
     for yi, yio in zip(y, yo):
-        if yio is not np.nan:
+        if ~np.isnan(yio):
             tot += (yi-yio)**2
     return tot
 
@@ -31,7 +31,8 @@ def mean_squared_error(y, yo):
 def minmax_penalty(x, xo, smoothness=1):
     tot = 0
     for xi, xio in zip(x, xo):
-        if xio is not np.nan:
+        if ~np.isnan(xio):
+            print(xio)
             tot += approximate_step_function(xi-xio, smoothness)
     return tot
 
