@@ -221,6 +221,8 @@ class PlannerInterface:
         m, n = map_shape
         horiz_beamlets = [b.value for b in beamlets[:m]]
         vert_beamlets = [b.value for b in beamlets[m:]]
+        if np.any(np.array(horiz_beamlets)<0) or np.any(np.array(vert_beamlets)<0):
+            raise Exception("Negative beamlet value detected. Suggestion: Adjust the smoothness.")
         beams[0].solve(horiz_beamlets, intensity)
         beams[1].solve(vert_beamlets, intensity)
         beamlet_values = np.hstack([beams[0].beamlets, beams[1].beamlets])  # set new beamlets incorporating intensity
