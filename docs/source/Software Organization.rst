@@ -35,11 +35,11 @@ Modules
 
 Examples
 -------------
-1. **docs/examples/introductory_demo.ipynb**: Introductory examples of using the `gradpy` package, covering single-variable, multi-variable, and vector-valued functions.
-2. **docs/examples/special_functions_demo.ipynb**: How to import and use functions such as `sin` and `exp`.
-3. **docs/examples/newton_multivar_demo.ipynb**: An application of `gradpy` in root-finding using Newton's method.
+1. **docs/examples/introductory_demo.ipynb**: Introductory examples of using the ``gradpy`` package, covering single-variable, multi-variable, and vector-valued functions.
+2. **docs/examples/special_functions_demo.ipynb**: How to import and use functions such as ``sin`` and ``exp``.
+3. **docs/examples/newton_multivar_demo.ipynb**: An application of ``gradpy`` in root-finding using Newton's method.
 
 
 Tests
 -------
-The test suite is in the *tests* directory of our package. We maintain our test suite and package on GitHub, with Travis CI and Coveralls for continuous integration.
+Our test suite is maintained along with our package on GitHub, with Travis CI and Coveralls for continuous integration. Instructions for running the test suite after successfully installing ``gradpy`` can be found in the :doc:`Installation` section.
