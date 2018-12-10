@@ -11,11 +11,13 @@ from enum import Enum
 
 
 class BeamDirection(Enum):
+    """ Enum of beam directions used by therapy planner."""
     Horizontal = 1  # beam propagating along x
     Vertical = 2  # beam propagating along y
 
 
 class Beam:
+    """ Class to compute beam exposure time and collimator aperture sequences. """
     def __init__(self, direction):
         if direction not in [BeamDirection.Horizontal,BeamDirection.Vertical]:
             raise Exception("Invalid beam direction.")
@@ -29,6 +31,16 @@ class Beam:
         """
         Compute beam exposure time and collimator aperture sequence
         based on optimized beamlets and beam intensity.
+
+        INPUTS
+        =======
+        beamlets: an array of beamlet source intensities.
+        intensity: the true single beamlet intensity.
+
+        COMPUTES
+        ========
+        collimator: a dictionary of the left and right collimator position sequences.
+        exposure_time: the corresponding exposure time for the beam.
         """
         self.intensity = intensity
         profile = np.array([0] + [(b//self.intensity+np.round(b%self.intensity)/self.intensity).astype(np.int) \
@@ -46,7 +58,26 @@ class Beam:
 class PlannerInterface:
     def __init__(self, filename):
         """
-        :param filename: The filename of the text file where user defined the therapy maps (as in the format of the demo.map)
+        Interface for solving and visualizing 2D dose delivery optimization.
+
+        INPUTS
+        =======
+        filename: The filename of user-defined target, maximum, and minimum dose maps.
+
+        ATTRIBUTES
+        ===========
+        datafile: the input filename for dose maps.
+        opt: flag indicating if optimization has been performed.
+        rotate: If rotation of the dose map is performed in optimization.
+        rotation_angle: the optimal rotation angle.
+
+        METHODS
+        ========
+        get_maps(): get dictionary of available dose maps.
+        optimize(): optimize dose delivery plan.
+        plot_map(): visualize a dose map.
+        plot_collimators(): visualize the optimized collimator aperture sequences.
+        print_summary(): display a summary of the optimized plan.
         """
         self.datafile = filename
         horiz_beam = Beam(BeamDirection.Horizontal)
@@ -74,9 +105,12 @@ class PlannerInterface:
 
     def read_maps(self):
         """
-        :return: maps, where key is "target", "max" or "min" depending on the map type and value is an numpy 2D array
+        Read text input file of dose maps to a dictionary.
 
-        See Interface Demo.ipynb for usage
+        RETURNS
+        =======
+        maps: dictionary of maps, where key is "target", "max" or "min" depending
+              on the map type and value is an numpy 2D array.
         """
         def get_map_type(line):
             if "target" in line.lower():
@@ -123,17 +157,23 @@ class PlannerInterface:
     @timer
     def optimize(self, intensity, smoothness=1., tol=1e-8, maxiter=1000, bounds=False, allow_rotation=False):
         """
-        :param intensity: the intensity of the incident beams
-        :param smoothness: the smoothness of the logistic function used in the penalty term
-        :param tol: stopping criterion for step size in optimization
-        :param maxiter: maximum number of iterations in optimization
-        :param allow_rotation: whether compute optimization allowing rotating the maps
+        Perform 2D dose delivery optimization.
 
-        :computes dose_map: the accumulated dose map at the optimized collimator sequences, of the same shape as the input maps
-        :computes horiz_beam: the horizontal beam object, with beam intensity, collimator, and beamlets attributes
-        :computes vert_beam: the vertical beam object, with beam intensity, collimator, and beamlets attributes
+        INPUTS
+        =======
+        intensity: The intensity of the horizontal and vertical irradiation beams (assumed equal).
+        smoothness (optional, default 1): The smoothness of the logistic function used to enforce minimum and maximum constrants.
+        tol (optional, default 1e-8): the stopping tolerance for the 2-norm of the step size.
+        maxiter (optional, default 100000): the maximum number of iterations.
+        bounds (optional, default False): whether to enforce minimum and maximum dose constraints.
+        allow_rotation (optional, default False): whether to allow rotation of the maps in optimization.
 
-        See optimize_demo.ipynb for example
+        COMPUTES
+        =========
+        "optimized", "difference", and "error" dose maps added to the maps dictionary.
+        horizontal and vertical beam exposure times and collimator aperture sequences.
+
+        Results may be visualized with the plot_map(), plot_collimators(), and print_summary() methods.
         """
         if not allow_rotation:
             maps, cost_value, beams = self.optimize_map(self._maps, intensity, smoothness, tol, maxiter, bounds)
@@ -166,6 +206,10 @@ class PlannerInterface:
         self.opt = True  # set optimization flag
 
     def optimize_map(self, maps, intensity, smoothness, tol, maxiter, bounds):
+        """
+        Optimize a single dose map (internal subroutine)
+
+        """
         m, n = maps['target'].shape
 
         # Step 1: Optimize intensity profiles (beamlets) for each beam.
@@ -199,6 +243,10 @@ class PlannerInterface:
         return maps, cost_value, beams
 
     def optimize_beamlets(self, maps, smoothness, tol, maxiter, bounds):
+        """
+        Optimize beamlets according to reframed problem (internal subroutine)
+
+        """
         m, n = maps['target'].shape
         attenuation = np.zeros((m*n, m+n)) # matrix of attenuation factors
         mu = 0.07  # attenuation coefficient in human tissue (brain, lung, blood) for 1 MeV photon energy
@@ -220,6 +268,10 @@ class PlannerInterface:
         return beamlets, dose, found, cost.value
 
     def solve_beam_collimators(self, beams, map_shape, beamlets, intensity):
+        """
+        Solve for beam collimator apertures and exposure times (internal subroutine)
+
+        """
         m, n = map_shape
         horiz_beamlets = [b.value for b in beamlets[:m]]
         vert_beamlets = [b.value for b in beamlets[m:]]
@@ -234,11 +286,16 @@ class PlannerInterface:
 
     def plot_map(self, name, ax=None, cmap='viridis_r', fontsize=14):
         """
-        param name: name of map to plot; before optimization, valid names are "target", "min", and "max"
-                                         after optimization, additional maps are "optimized", "difference", and "error".
-        param ax: the axes to which the plot should be added.
-        param cmap: the colormap to use (default 'viridis_r')
-        param fontsize: the font size for axis labels and text (default 14)
+        Plot a dose map for visualization.
+
+        INPUTS
+        =======
+        name: The name of map to plot from the dictionary in get_maps(); before optimization,
+              valid names are "target", "min", and "max";
+              after optimization, additional maps are "optimized", "difference", and "error".
+        ax (optional, default None) ax: the axes to which the plot should be added. If none, plot_map creates a figure and axes.
+        cmap (optional, default 'viridis_r'): the matplotlib colormapp to use.
+        fontsize (optional, default 14): the font size for axis labels and text.
         """
         try:
             dose_map = self._maps[name]
@@ -270,31 +327,40 @@ class PlannerInterface:
             plt.show()
 
     def plot_collimators(self):
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
-        m, n = self._maps["target"].shape
-        for t, (left, right) in enumerate(zip(self._beams[0].collimator["left"], self._beams[0].collimator["right"])):
-            ax1.plot([t, t], [m+1, m-left], lw=10, color=[0.2, 0.6, 0.7])
-            ax1.plot([t, t], [m-right, -1], lw=10, color=[0.2, 0.6, 0.7])
-        ax1.axhline(0, linestyle='dashed', color='k')
-        ax1.axhline(m, linestyle='dashed', color='k')
-        ax1.axhspan(0, m, alpha=0.5, color=[1.0,1.0,0.1])
-        ax1.set_xlim(-0.5, len(self._beams[0].collimator["left"]))
-        ax1.tick_params(labelsize=14)
-        ax1.set_xlabel('exposure time (s)', size=14)
-        ax1.set_title('horizontal beam collimator apertures', size=14)
-        for t, (left, right) in enumerate(zip(self._beams[1].collimator["left"], self._beams[1].collimator["right"])):
-            ax2.plot([-1, left], [t, t], lw=10, color=[0.2, 0.6, 0.7])
-            ax2.plot([right, n+1], [t, t], lw=10, color=[0.2, 0.6, 0.7])
-        ax2.axvline(0, linestyle='dashed', color='k')
-        ax2.axvline(n, linestyle='dashed', color='k')
-        ax2.axvspan(0, n, alpha=0.5, color=[1.0, 1.0, 0.1])
-        ax2.set_ylim(-0.5, len(self._beams[1].collimator["left"]))
-        ax2.tick_params(labelsize=14)
-        ax2.set_ylabel('exposure time (s)', size=14)
-        ax2.set_title('vertical beam collimator apertures', size=14)
-        plt.show()
+        """
+        Plot optimized collimator aperture sequences.
+        """
+        if not self.opt:
+            raise Exception("Collimator sequences not available; plan has not been optimized.")
+        else:
+            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 6))
+            m, n = self._maps["target"].shape
+            for t, (left, right) in enumerate(zip(self._beams[0].collimator["left"], self._beams[0].collimator["right"])):
+                ax1.plot([t, t], [m+1, m-left], lw=10, color=[0.2, 0.6, 0.7])
+                ax1.plot([t, t], [m-right, -1], lw=10, color=[0.2, 0.6, 0.7])
+            ax1.axhline(0, linestyle='dashed', color='k')
+            ax1.axhline(m, linestyle='dashed', color='k')
+            ax1.axhspan(0, m, alpha=0.5, color=[1.0,1.0,0.1])
+            ax1.set_xlim(-0.5, len(self._beams[0].collimator["left"]))
+            ax1.tick_params(labelsize=14)
+            ax1.set_xlabel('exposure time (s)', size=14)
+            ax1.set_title('horizontal beam collimator apertures', size=14)
+            for t, (left, right) in enumerate(zip(self._beams[1].collimator["left"], self._beams[1].collimator["right"])):
+                ax2.plot([-1, left], [t, t], lw=10, color=[0.2, 0.6, 0.7])
+                ax2.plot([right, n+1], [t, t], lw=10, color=[0.2, 0.6, 0.7])
+            ax2.axvline(0, linestyle='dashed', color='k')
+            ax2.axvline(n, linestyle='dashed', color='k')
+            ax2.axvspan(0, n, alpha=0.5, color=[1.0, 1.0, 0.1])
+            ax2.set_ylim(-0.5, len(self._beams[1].collimator["left"]))
+            ax2.tick_params(labelsize=14)
+            ax2.set_ylabel('exposure time (s)', size=14)
+            ax2.set_title('vertical beam collimator apertures', size=14)
+            plt.show()
 
     def print_summary(self):
+        """
+        Print a summary of the optimized plan.
+        """
         if not self.opt:
             raise Exception("No summary available; plan has not been optimized.")
         else:

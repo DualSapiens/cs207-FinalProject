@@ -2,14 +2,14 @@ import numpy as np
 
 def BFGS(fun, var, xi, tol=1.0e-8, maxiter=100000):
     """ Broyden-Fletcher-Goldfarb-Shanno algorithm for unconstrained nonlinear optimization,
-        using autodiff.
+        using automatic differentiation.
 
     INPUTS
     =======
     fun: an autodiff Operation object (scalar-valued function) whose value to minimize.
-    var: an array of autodiff Var objects that are independent variables of fun.
+    var: a list of autodiff Var objects that are independent variables of fun.
          The values of var are updated to the optimal solution on return.
-    xi: an array of initial guesses for each variable in var.
+    xi: a list of initial guesses for each variable in var.
     tol (optional, default 1e-8): the stopping tolerance for the 2-norm of the step size.
     maxiter (optional, default 100000): the maximum number of iterations.
 
@@ -17,6 +17,7 @@ def BFGS(fun, var, xi, tol=1.0e-8, maxiter=100000):
     =======
     step: the 2-norm of the final step size.
     Niter: the number of iterations performed.
+    found: whether the minimum has been found.
     """
 
     found = False  # A variable to indicate whether the minimum to the cost function is found

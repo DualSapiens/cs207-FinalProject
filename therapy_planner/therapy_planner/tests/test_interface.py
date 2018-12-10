@@ -200,6 +200,9 @@ class TestInterface:
         plt.ion()
         plan = PlannerInterface(os.path.join(__location__, 'test_optimize.map'))
         intensity = 0.2
+        with pytest.raises(Exception) as e:
+            plan.plot_collimators()
+        assert e.exconly() == 'Exception: Collimator sequences not available; plan has not been optimized.'
         plan.optimize(intensity, smoothness=0.012)
         plan.plot_collimators()
         plt.close("all")
