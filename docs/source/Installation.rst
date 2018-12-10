@@ -28,7 +28,7 @@ Testing
 ---------
 After installation, users may wish to run tests to validate their installed package is working properly. `gradpy` comes with a test suite that may be easily run using `pytest`.
 
-1. Within the virtual environment in which `gradpy` has been installed, run `pip install pytest``.
+1. Within the virtual environment in which `gradpy` has been installed, run `pip install pytest`.
 **note:** A terminal restart after installing `pytest` is likely necessary for changes to take effect.
 2. Type `pytest --pyargs gradpy` to run the `gradpy` test suite.
 

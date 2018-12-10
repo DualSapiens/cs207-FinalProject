@@ -4,7 +4,7 @@ branch = True
 omit =
     */tests/*
     gradpy/setup.py
-
+    therapy_planner/setup.py
 
 [report]
 # Regexes for lines to exclude from consideration
