@@ -252,7 +252,7 @@ class PlannerInterface:
             show = False
         im = ax.imshow(dose_map, cmap=cmap)
         cbar = ax.figure.colorbar(im, ax=ax)
-        cbar.ax.set_ylabel("dose", rotation=-90, va="bottom", size=14)
+        cbar.ax.set_ylabel("dose (Gy)", rotation=-90, va="bottom", size=14)
         ax.tick_params(top=True, bottom=False,
                        labeltop=True, labelbottom=False)
         ax.set_xticks([])
