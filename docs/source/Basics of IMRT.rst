@@ -44,7 +44,7 @@ where :math:`d_i \in D` and :math:`b_j \in B`. :math:`\sigma` is the logistic fu
 
 Once an optimal set of beamlet sources is found, the corresponding collimator aperture sequences and beam exposure times which most closely agree with the reframed problem solution can be determined analytically as detailed in [Boye02]_; this is achieved by sequentially aligning the left collimator position with positive steps (gradients) in the beamlet intensity pattern, and the right collimator position with negative steps (gradients) in the intensity pattern.
 
-The next section highlights the optimization routine implemented with `gradpy`, which allows for simple construction of cost functions as described above. The last section features example demos of our simple therapy planner implementation.
+The next section highlights the optimization routine implemented with ``gradpy``, which allows for simple construction of cost functions as described above. The last section features example demos of our simple therapy planner implementation.
 
 .. rubric:: References
 
