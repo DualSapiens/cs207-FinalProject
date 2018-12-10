@@ -3,7 +3,9 @@ Featured Application
 Intensity Modulated Radiation Therapy (IMRT)
 --------------------------------------------
 
-The following section presents an extended application of automatic differentiation using the `gradpy` package to address an optimization problem encountered in the field of Intensity Modulated Radiation Therapy (IMRT). All demos and accompanying code are available in the examples_ of the project GitHub repository.
+One of the most prominent applications of automatic differentiation has been in the topic of optimization. Optimization problems typically entail minimizing a cost or objective function by following the direction of greatest decrease, provided by its gradient. In particular, optimization in the field of Intensity Modulated Radiation Therapy (IMRT) relies on precise gradients of complex, multivariate cost functions subject to constraints, and is thus a well-suited problem for automatic differentiation. Inspired by the work of Jee *et al.* [JeMF18]_, we have developed the `therapy_planner` package to solve 2D dose delivery optimization problems in IMRT. `therapy_planner` ships with `gradpy` and comes with a user-friendly interface for data input, optimization, and visualization. Though an introductory package, `therapy_planner` flexibly handles missing data, allows users to adjust the stringency of optimization criteria, and optionally optimizes over different orientations of the target region, to name a few of the features we hope users will explore with this application.
+
+`therapy_planner` can be installed with `pip install therapy_planner` and is suitable for an environment running Python 3. The secions below outline some of the basic concepts of IMRT, detail the optimization routine adapted for `gradpy` that is at the core of `therapy_planner`, and present several example demos to get started.
 
 .. toctree::
    :maxdepth: 2
@@ -12,4 +14,6 @@ The following section presents an extended application of automatic differentiat
    bfgs_demo
    optimize_demo
 
-.. _examples: https://github.com/DualSapiens/cs207-FinalProject/tree/master/docs/examples
+.. rubric:: References
+
+.. [JeMF18] Jee, Kyung-Wook, Daniel L. McShan, and Benedick A. Fraass. "Implementation of Automatic Differentiation Tools for Multicriteria IMRT Optimization." *Automatic Differentiation: Applications, Theory, and Implementations*, Springer, 2005.
