@@ -39,6 +39,7 @@ Directory Structure
             interface.py
             costfunctions.py
             bfgs.py
+            timer.py
         setup.py
         requirements.txt
         LICENSE
@@ -57,7 +58,8 @@ Modules
 1. **therapy_planner/interface.py**: This is the main module users will import, which defines a user-friendly ``PlannerInterface`` Class to read in input data, run optimization, and visualize the results.
 2. **therapy_planner/costfunctions.py**: Defines different contributions to the cost function used in optimization, including mean squared error and a logistic penalty function.
 3. **therapy_planner/bfgs.py**: Includes the BFGS routine implemented with ``gradpy``, which is used by ``therapy_planner`` to perform a minimization of the cost function.
-4. **gradpy/tests/**: A directory of test modules used in validating our implementation.
+4. **therapy_planner/timer.py**: A timer function decorator used to measure and report optimization time.
+5. **gradpy/tests/**: A directory of test modules used in validating our implementation.
 
 Examples
 -------------
