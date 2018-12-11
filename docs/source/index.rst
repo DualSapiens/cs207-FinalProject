@@ -1,4 +1,4 @@
-Gradpy Documentation
+Gradpy and Therapy Planner Documentation
 ====================================
 
 .. toctree::
@@ -25,11 +25,17 @@ affords ease in implementation and is amenable to any function, but it comes at 
 
 Automatic differentiation in science and engineering has been applied to address problems in a variety of areas, including optimization, root-finding, and implicit time-integration.
 
+The ``therapy_planner`` package is an application of automatic differentiation. See more about ``therapy_planner`` in :doc:`Featured Application` page.
+
+This project also hosts the therapy_planner package, an application of automatic differentiation for dose delivery optimization relevant to Intensity Modulated Radiation Therapy (IMRT), that automatically ships with gradpy.
+
 This project_ is hosted on GitHub.
 
 .. _automatic differentiation: https://en.wikipedia.org/wiki/Automatic_differentiation
 
 .. _project: https://github.com/DualSapiens/cs207-FinalProject
+
+
 
 
 .. Below are comments - just hiding for now
